@@ -46,7 +46,8 @@ class Venue(db.Model):
     state = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
-    image_link = db.Column(db.String(500), nullable=False)
+    genres = db.Column(db.String, nullable=False)
+    image_link = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(120), nullable=False)
 
     artists = db.relationship('Artist', secondary=Shows,
@@ -66,7 +67,7 @@ class Artist(db.Model):
     state = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
     genres = db.Column(db.String(120), nullable=False)
-    image_link = db.Column(db.String(500), nullable=False)
+    image_link = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(120), nullable=False)
 
     def __repr__(self):
@@ -240,6 +241,23 @@ def create_venue_form():
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
+
+  error = False
+  body = {}
+  try:
+    name = request.get_json()['name']
+    city = request.get_json()['city']
+    state = request.get_json()['state']
+    address = request.get_json()['address']
+    phone = request.get_json()['phone']
+    facebook_link = request.get_json()['facebook_link']
+
+    todolist = TodoList(name=name)
+    db.session.add(todolist)
+    db.session.commit()
+    body['id'] = todolist.id
+    body['name'] = todolist.name
+
 
   # on successful db insert, flash success
   flash('Venue ' + request.form['name'] + ' was successfully listed!')
