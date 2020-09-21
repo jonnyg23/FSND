@@ -27,6 +27,11 @@ db = SQLAlchemy(app)
 # Models.
 #----------------------------------------------------------------------------#
 
+# Added Shows object with Many-to-many relationship with Artists and Venues
+Shows = db.Table('Shows',
+    db.Column('venue_id', db.Integer, db.ForeignKey('venue.id'), primary_key=True),
+    db.Column('artist_id', db.Integer, db.ForeignKey('artist.id'), primary_key=True)
+)
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
