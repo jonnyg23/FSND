@@ -289,7 +289,24 @@ def delete_venue(venue_id):
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+
+  error = False
+  try:
+      venue2Delete = Venue.query.get(venue_id)
+      for artists2Delete in venue2Delete.artists:
+          db.session.delete(artists2Delete)
+        
+      db.session.delete(venue2Delete)
+      db.session.commit()
+  except():
+      db.session.rollback()
+      error = True
+  finally:
+      db.session.close()
+  if error:
+      abort(500)
+  else:
+      return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------
@@ -469,11 +486,43 @@ def create_artist_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
-  return render_template('pages/home.html')
+  error = False
+  body = {}
+  try:
+    name = request.form['name']
+    city = request.form['city']
+    state = request.form['state']
+    phone = request.form['phone']
+    genres = request.form['state']
+    facebook_link = request.form['state']
+
+    artist_submission = Artist(name=name,city=city,state=state,phone=phone,genres=genres,facebook_link=facebook_link)
+    db.session.add(artist_submission)
+    db.session.commit()
+    body['id'] = artist_submission.id
+    body['name'] = artist_submission.name
+    body['city'] = artist_submission.city
+    body['state'] = artist_submission.state
+    body['phone'] = artist_submission.phone
+    body['genres'] = artist_submission.genres
+    body['facebook_link'] = artist_submission.facebook_link
+
+    # on successful db insert, flash success
+    flash('Artist ' + request.form['name'] + ' was successfully listed!')
+
+  except():
+    # TODO: on unsuccessful db insert, flash an error instead.
+    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    
+    db.session.rollback()
+    error = True
+  finally:
+    db.session.close()
+  if error:
+    flash('An error occurred. Artist ' + request.form['name'] + 'could not be listed.')
+  else:
+    return render_template('pages/home.html')
 
 
 #  Shows
