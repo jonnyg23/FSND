@@ -31,12 +31,6 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-# Added Shows object with Many-to-many relationship with Artists and Venues
-Shows = db.Table('Shows',
-  db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-  db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-  db.Column('start_time', db.DateTime, nullable=False))
-
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
@@ -74,6 +68,18 @@ class Artist(db.Model):
         return f'<Artist ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, phone: {self.phone}, genres: {self.genres}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+# Added Shows object with Many-to-many relationship with Artists and Venues
+class Shows(db.Model):
+  __tablename__ = 'Shows'
+
+  id = db.Column('id', db.Integer, primary_key=True)
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
+  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
+  start_time = db.Column(db.DateTime, nullable=False)
+
+  venue = db.relationship(Venue, backref="shows")
+  artist = db.relationship(Artist, backref="shows")
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
