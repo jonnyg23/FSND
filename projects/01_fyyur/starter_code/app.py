@@ -32,11 +32,13 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 
 # Added Shows object with Many-to-many relationship with Artists and Venues
-Shows = db.Table('Shows',
-    db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-    db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-    db.Column('start_time', db.DateTime, nullable=False)
-)
+class Shows(db.Model): 
+  __tablename__ = 'Shows'
+
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), primary_key=True)
+  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
+  start_time = db.Column(db.DateTime, nullable=False)
+
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
@@ -587,6 +589,9 @@ def create_show_submission():
     artist_id = request.form['artist_id']
     venue_id = request.form['venue_id']
     start_time = request.form['start_time']
+
+    db.session.query(db.exists().where(Artist.id == artist_id)).scalar()
+
     show = Shows(artist_id=artist_id,venue_id=venue_id,start_time=start_time)
     db.session.add(show)
     db.session.commit()
