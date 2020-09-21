@@ -253,7 +253,7 @@ def create_venue_submission():
     genres = request.get_json()['genres']
     facebook_link = request.get_json()['facebook_link']
 
-    venue_submission = Venue(name=name)
+    venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link)
     db.session.add(venue_submission)
     db.session.commit()
     body['id'] = venue_submission.id
