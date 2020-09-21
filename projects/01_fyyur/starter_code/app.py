@@ -245,13 +245,13 @@ def create_venue_submission():
   error = False
   body = {}
   try:
-    name = request.get_json()['name']
-    city = request.get_json()['city']
-    state = request.get_json()['state']
-    address = request.get_json()['address']
-    phone = request.get_json()['phone']
-    genres = request.get_json()['genres']
-    facebook_link = request.get_json()['facebook_link']
+    name = request.form['name']
+    city = request.form['city']
+    state = request.form['state']
+    address = request.form['address']
+    phone = request.form['phone']
+    genres = request.form['state']
+    facebook_link = request.form['state']
 
     venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link)
     db.session.add(venue_submission)
@@ -311,7 +311,7 @@ def artists():
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
+  # search for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
   # search for "band" should return "The Wild Sax Band".
   response={
     "count": 1,
