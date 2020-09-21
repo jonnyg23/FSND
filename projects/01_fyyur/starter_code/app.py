@@ -35,7 +35,7 @@ migrate = Migrate(app, db)
 Shows = db.Table('Shows',
     db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
     db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-    db.Column('start_time', db.DateTime)
+    db.Column('start_time', db.DateTime, nullable=False)
 )
 class Venue(db.Model):
     __tablename__ = 'Venue'
