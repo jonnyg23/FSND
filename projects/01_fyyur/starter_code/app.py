@@ -43,9 +43,11 @@ class Venue(db.Model):
     genres = db.Column(db.String, nullable=False)
     image_link = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(120), nullable=False)
-
-    artists = db.relationship('Artist', secondary=Shows,
-      backref=db.backref('venues', lazy=True))
+    description = db.Column(db.String(500), default='')
+    seeking_talent = db.Column(db.Boolean, default=False)
+    website = db.Column(db.String(120))
+    genres = db.Column(db.ARRAY(String))
+    shows = db.relationship('Show', backref='Venue', lazy='dynamic')
 
     def __repr__(self):
         return f'<Venue ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
