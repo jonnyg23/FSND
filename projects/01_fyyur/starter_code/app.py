@@ -599,7 +599,7 @@ def create_show_submission():
 
     # db.session.query(db.exists().where(Artist.id == artist_id)).scalar()
 
-    show = Shows(artist_id=artist_id,venue_id=venue_id,start_time=start_time)
+    show = Show(artist_id=artist_id,venue_id=venue_id,start_time=start_time)
     db.session.add(show)
     db.session.commit()
 
