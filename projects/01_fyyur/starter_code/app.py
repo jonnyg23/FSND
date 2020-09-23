@@ -260,7 +260,11 @@ def search_venues():
   # }
 
   venue_query = Venue.query.filter(Venue.name.ilike('%' + request.form['search_term'] + '%'))
-  venue_list = list(map(Venue.short))
+  venue_list = list(map(Venue.short, venue_query))
+  response = {
+    "count": len(venue_list),
+    "data": venue_list
+  }
 
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
