@@ -49,6 +49,38 @@ class Venue(db.Model):
     genres = db.Column(db.ARRAY(db.String))
     shows = db.relationship('Show', backref='Venue', lazy='dynamic')
 
+    def __init__(self, name, genres, address, city, state, phone, website, facebook_link, image_link, seeking_talent=False, description=""):
+      self.name = name
+      self.genres = genres
+      self.city = city
+      self.state = state
+      self.address = address
+      self.phone = phone
+      self.image_link = image_link
+      self.facebook_link = facebook_link
+      self.website = website
+      self.description = description
+
+    def short(self):
+      """
+      Method displays only id and name from Venues.
+      """
+      return{
+        "id": self.id,
+        "name": self.name
+      }
+
+    def long(self):
+      """
+      Method displays id, name, city, and state from Venues.
+      """
+      return{
+        "id": self.id,
+        "name": self.name,
+        "city": self.city,
+        "state": self.state
+      }
+
     def __repr__(self):
         return f'<Venue ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
 
@@ -70,6 +102,26 @@ class Artist(db.Model):
     website = db.Column(db.String(120))
     shows = db.relationship('Show', backref='Artist', lazy=True)
 
+    def __init__(self, name, genres, city, state, phone, image_link, website, facebook_link, seeking_venue=False, seeking_description=""):
+      self.name = name
+      self.genres = genres
+      self.city = city
+      self.state = state
+      self.phone = phone
+      self.website = website
+      self.facebook_link = facebook_link
+      self.seeking_description = seeking_description
+      self.image_link = image_link
+
+    def short(self):
+      """
+      Method displays id and name of Artist.
+      """
+      return{
+        'id': self.id,
+        'name':self.name,
+      }
+
     def __repr__(self):
         return f'<Artist ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, phone: {self.phone}, genres: {self.genres}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
 
@@ -83,6 +135,33 @@ class Show(db.Model):
   venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
   start_time = db.Column(db.String, nullable=False)
+
+  def __init__(self, venue_id, artist_id, start_time):
+    self.venue_id = venue_id
+    self.artist_id = artist_id
+    self.start_time = start_time
+
+  def venue_details(self):
+    """
+    Shows Venue id, name, image_link, and start_time.
+    """
+    return{
+      "venue_id": self.venue_id,
+      "venue_name": self.Venue.name,
+      "venue_image_link": self.Venue.image_link,
+      "start_time": self.start_time
+    }
+
+  def artist_details(self):
+    """
+    Shows Artist id, name, image_link, and start time.
+    """
+    return{
+      "artist_id": self.venue_id,
+      "artist_name": self.Artist.name,
+      "artist_image_link": self.Artist.image_link,
+      "start_time": self.start_time
+    }
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -137,13 +216,13 @@ def venues():
   #     "num_upcoming_shows": 0,
   #   }]
   # }]
-  
+
   data = []
-  venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
+  venue_query = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
   venue_location = ''
   current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
   
-  for venue in venues:
+  for venue in venue_query:
     # show upcoming shows
     upcoming_shows = venue.shows.filter(Show.start_time > current_time).all()
     if venue_location == venue.state + venue.city:
@@ -171,14 +250,18 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # search for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }
+  # response={
+  #   "count": 1,
+  #   "data": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }
+
+  venue_query = Venue.query.filter(Venue.name.ilike('%' + request.form['search_term'] + '%'))
+  venue_list = list(map(Venue.short))
+
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>')
