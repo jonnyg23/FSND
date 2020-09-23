@@ -44,7 +44,6 @@ class Venue(db.Model):
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String)
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     description = db.Column(db.String(500), default='')
@@ -438,13 +437,13 @@ def create_venue_submission():
     address = request.form['address']
     phone = request.form['phone']
     genres = request.form.getlist('genres')
-    facebook_link = request.form['state']
-    website = request.form['website']
     image_link = request.form['image_link']
-    seeking_talent = request.form['seeking_talent']
+    facebook_link = request.form['facebook_link']
     description = request.form['seeking_description']
+    seeking_talent = request.form['seeking_talent']
+    website = request.form['website']
 
-    venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link, website=website, image_link=image_link, seeking_talent=seeking_talent, description=description)
+    venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,image_link=image_link,facebook_link=facebook_link, description=description,seeking_talent=seeking_talent,website=website)
     db.session.add(venue_submission)
     db.session.commit()
 
