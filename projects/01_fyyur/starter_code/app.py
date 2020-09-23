@@ -90,7 +90,7 @@ class Venue(db.Model):
         "city": self.city,
         "phone": self.phone,
         "website": self.website,
-        "facebook_link" self.facebook_link,
+        "facebook_link": self.facebook_link,
         "seeking_talent": self.seeking_talent,
         "description": self.description,
         "image-link": self.image_link
@@ -393,7 +393,7 @@ def show_venue(venue_id):
   #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
 
   venue_query = Venue.query.get(venue_id)
-  
+
   if venue_query:
     current_time = datetime.now().strftime('&Y-%m-%d %H:%M:%S')
     venue_info = Venue.info(venue_query)
