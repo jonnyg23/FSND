@@ -401,7 +401,7 @@ def show_venue(venue_id):
     past_shows_query = Show.query.options(db.joinedload(Show.Venue)).filter(Show.venue_id == venue_id).filter(Show.start_time <= current_time).all()
     
     new_shows = list(map(Show.artist_info, new_shows_query))
-    past_shows = list(map(Show.artist_info, past_show_query))
+    past_shows = list(map(Show.artist_info, past_shows_query))
     
     venue_info["upcoming_shows"] = new_shows
     venue_info["upcoming_shows_count"] = len(new_shows)
@@ -434,12 +434,17 @@ def create_venue_submission():
     state = request.form['state']
     address = request.form['address']
     phone = request.form['phone']
-    genres = request.form['state']
+    genres = request.form.getlist('genres')
     facebook_link = request.form['state']
+    website = request.form['website']
+    image_link = request.form['image_link']
+    seeking_talent = request.form['seeking_talent']
+    description = request.form['seeking_description']
 
-    venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link)
+    venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link, website=website, image_link=image_link, seeking_talent=seeking_talent, description=description)
     db.session.add(venue_submission)
     db.session.commit()
+    
     body['id'] = venue_submission.id
     body['name'] = venue_submission.name
     body['city'] = venue_submission.city
@@ -448,6 +453,10 @@ def create_venue_submission():
     body['phone'] = venue_submission.phone
     body['genres'] = venue_submission.genres
     body['facebook_link'] = venue_submission.facebook_link
+    body['website'] = venue_submission.website
+    body['image_link'] = venue_submission.image_link
+    body['seeking_talent'] = venue_submission.seeking_talent
+    body['description'] = venue_submission.description
 
     # on successful db insert, flash success
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
