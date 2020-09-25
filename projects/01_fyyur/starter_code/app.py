@@ -62,6 +62,7 @@ class Venue(db.Model):
       self.image_link = image_link
       self.facebook_link = facebook_link
       self.website = website
+      self.seeking_talent = seeking_talent
       self.seeking_description = seeking_description
 
     def short(self):
@@ -128,6 +129,7 @@ class Artist(db.Model):
       self.phone = phone
       self.website = website
       self.facebook_link = facebook_link
+      self.seeking_venue = seeking_venue
       self.seeking_description = seeking_description
       self.image_link = image_link
 
@@ -286,7 +288,7 @@ def venues():
         }]
       })
 
-  return render_template('pages/venues.html', areas=data);
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -706,7 +708,7 @@ def edit_artist(artist_id):
 def edit_artist_submission(artist_id):
   # TODO: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
-  form = ArtistForm(request.form)
+  form = ArtistForm()
 
   name = form.name.data.strip()
   city = form.city.data.strip()
@@ -714,7 +716,7 @@ def edit_artist_submission(artist_id):
   phone = form.phone.data
   phone = re.sub('\D','', phone) # Take away anything that isn't a #
   genres = form.genres.data
-  seeking_talent = True if form.seeking_talent.data == 'Yes' else False
+  seeking_venue = True if form.seeking_venue.data == 'Yes' else False
   seeking_description = form.seeking_description.data.strip()
   image_link = form.image_link.data.strip()
   facebook_link = form.facebook_link.data.strip()
@@ -781,7 +783,62 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
-  return redirect(url_for('show_venue', venue_id=venue_id))
+  # Similar to edit_artist_submission above
+
+  form = VenueForm()
+  
+  name = form.name.data.strip()
+  city = form.city.data.strip()
+  state = form.state.data
+  address = form.address.data.strip()
+  phone = form.phone.data
+  phone = re.sub('\D','', phone) # Take away anything that isn't a #
+  genres = form.genres.data
+  seeking_talent = True if form.seeking_talent.data == 'Yes' else False
+  seeking_description = form.seeking_description.data.strip()
+  image_link = form.image_link.data.strip()
+  facebook_link = form.facebook_link.data.strip()
+  website = form.website.data.strip()
+  
+  if not form.validate():
+    flash( form.errors )
+    return redirect(url_for('edit_venue_submission', venue_id=venue_id))
+  
+  else:
+    error_updating = False
+    try:
+      venue = Venue.query.get(venue_id)
+  
+      venue.name = name
+      venue.city = city
+      venue.state = state
+      venue.address = address
+      venue.phone = phone
+      venue.genres = genres
+      venue.seeking_talent = seeking_talent
+      venue.seeking_description = seeking_description
+      venue.image_link = image_link
+      venue.website = website
+      venue.facebook_link = facebook_link
+  
+      db.session.commit()
+  
+    except Exception as e:
+      error_updating = True
+      print(f'Exception "{e}" in edit_venue_submission()')
+      db.session.rollback()
+    finally:
+      db.session.close()
+  
+    if not error_updating:
+      flash('Venue ' + request.form['name'] + ' was updated successfully!')
+      return redirect(url_for('show_venue', venue_id=venue_id))
+    else:
+      flash('An error occurred. Venue ' + name + ' could not be updated.')
+      abort(500)
+  
+  
+    return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
 #  ----------------------------------------------------------------
