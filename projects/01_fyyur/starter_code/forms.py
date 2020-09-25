@@ -95,7 +95,7 @@ class PhoneValidation(object):
         field.errors[:] = []
         raise StopValidation(message)
 
-class GenreValidation(self, form, field):
+class GenreValidation(object):
     """
     This validator checks that the ''data'' attribute on the field has a valid genre.
     """
@@ -158,7 +158,7 @@ class VenueForm(Form):
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
-        'genres', validators=[DataRequired()],
+        'genres', validators=[DataRequired(), GenreValidation()],
         choices = genre_choices
     )
     facebook_link = StringField(
@@ -198,7 +198,7 @@ class ArtistForm(Form):
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
-        'genres', validators=[DataRequired()],
+        'genres', validators=[DataRequired(), GenreValidation()],
         choices=genre_choices
     )
     facebook_link = StringField(
