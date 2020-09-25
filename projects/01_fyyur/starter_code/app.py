@@ -781,30 +781,35 @@ def edit_venue(venue_id):
   # }
   # TODO: populate form with values from venue with ID <venue_id>
 
-  venue = Venue.query.get(venue_id)
+  venue_data = Venue.query.get(venue_id)
 
-  if not venue:
+  if not venue_data:
     # Redirect home - URL doesn't exist
     return redirect(url_for('index'))
   
-  else:
-    form = VenueForm(obj=venue)
-    venue_info = Venue.info(venue)
-    form.name.data = venue_info["name"]
-    form.genres.data = venue_info["genres"]
-    form.address.data = venue_info["address"]
-    form.city.data = venue_info["city"]
-    form.state.data = venue_info["state"]
-    form.phone.data = venue_info["phone"]
-    form.website.data = venue_info["website"]
-    form.facebook_link.data = venue_info["facebook_link"]
-    form.seeking_talent.data = venue_info["seeking_talent"]
-    form.seeking_description.data = venue_info["seeking_description"]
-    form.image_link.data = venue_info["image_link"]
-
-    return render_template('form/edit_venue.html', form=form, Venue=venue_info)
-
+  else: 
+    # Venue is valid, proceed to populate form
+    form = VenueForm(obj=venue_data)
   
+  if venue_data:
+
+    venue_info = {
+        "id": venue_id,
+        "name": venue_data.name,
+        "genres": venue_data.genres,
+        "address": venue_data.address,
+        "city": venue_data.city,
+        "state": venue_data.state,
+        "phone": (venue_data.phone[:3] + '-' + venue_data.phone[3:6] + '-' + venue_data.phone[6:]),
+        "website": venue_data.website,
+        "facebook_link": venue_data.facebook_link,
+        "seeking_talent": venue_data.seeking_talent,
+        "seeking_description": venue_data.seeking_description,
+        "image_link": venue_data.image_link
+    }
+    
+    return render_template('forms/edit_venue.html', form=form, venue=venue_info)
+
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
