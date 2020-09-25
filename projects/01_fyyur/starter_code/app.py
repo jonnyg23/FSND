@@ -170,7 +170,7 @@ class Show(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
-  start_time = db.Column(db.String, nullable=False)
+  start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
   def __init__(self, venue_id, artist_id, start_time):
     self.venue_id = venue_id
@@ -264,7 +264,7 @@ def venues():
   # }]
 
   data = []
-  current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
+  current_time = datetime.now()
   venue_query = Venue.query.all()
   venue_location = set()
   for venue in venue_query:
@@ -406,7 +406,7 @@ def show_venue(venue_id):
   #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
 
   venue = Venue.query.get(venue_id)
-  current_time = datetime.now().strftime('&Y-%m-%d %H:%M:%S')
+  current_time = datetime.now()
 
   if not venue:
     # Redirect home - URL doesn't exist
@@ -423,17 +423,17 @@ def show_venue(venue_id):
         past_shows_count += 1
         past_shows.append({
           "artist_id": show.artist_id,
-          "artist_name": show.artist.name,
-          "artist_image_link": show.artist.image_link,
+          "artist_name": show.Artist.name,
+          "artist_image_link": show.Artist.image_link,
           "start_time": format_datetime(str(show.start_time))
         })
 
-      else:
+      if show.start_time > current_time:
         upcoming_shows_count += 1
         upcoming_shows.append({
           "artist_id": show.artist_id,
-          "artist_name": show.artist.name,
-          "artist_image_link": show.artist.image_link,
+          "artist_name": show.Artist.name,
+          "artist_image_link": show.Artist.image_link,
           "start_time": format_datetime(str(show.start_time))
         })
     
@@ -681,7 +681,7 @@ def show_artist(artist_id):
   # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
 
   artist = Artist.query.get(artist_id)
-  current_time = datetime.now().strftime('&Y-%m-%d %H:%M:%S')
+  current_time = datetime.now()
 
   if not artist:
     # Redirect home - URL doesn't exist
@@ -698,17 +698,17 @@ def show_artist(artist_id):
         past_shows_count += 1
         past_shows.append({
           "venue_id": show.venue_id,
-          "venue_name": show.venue.name,
-          "venue_image_link": show.venue.image_link,
+          "venue_name": show.Venue.name,
+          "venue_image_link": show.Venue.image_link,
           "start_time": format_datetime(str(show.start_time))
         })
 
-      else:
+      if show.start_time > current_time:
         upcoming_shows_count += 1
         upcoming_shows.append({
           "venue_id": show.venue_id,
-          "venue_name": show.venue.name,
-          "venue_image_link": show.venue.image_link,
+          "venue_name": show.Venue.name,
+          "venue_image_link": show.Venue.image_link,
           "start_time": format_datetime(str(show.start_time))
         })
     
@@ -1081,8 +1081,18 @@ def shows():
   #   "start_time": "2035-04-15T20:00:00.000Z"
   # }]
 
-  show = Show.query.options(db.joinedload(Show.Venue), db.joinedload(Show.Artist)).all()
-  data = list(map(Show.info, show))
+  shows = Show.query.all()
+  data = []
+
+  for show in shows:
+    data.append({
+      "venue_id": show.venue_id,
+      "venue_name": show.Venue.name,
+      "artist_id": show.Artist.id,
+      "artist_name": show.Artist.name,
+      "artist_image_link": show.Artist.image_link,
+      "start_time": format_datetime(str(show.start_time))
+    })
 
   return render_template('pages/shows.html', shows=data)
 
