@@ -479,7 +479,7 @@ def create_venue_submission():
       print("Error in create_venue_submission()")
       abort(500)
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<venue_id>/delete', methods=['DELETE'])
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
@@ -924,6 +924,38 @@ def create_artist_submission():
       flash('An error occurred. Artist ' + request.form['name'] + 'could not be listed.')
       print("Error in create_artist_submission()")
       abort(500)
+
+@app.route('/artists/<artist_id>/delete', methods=['DELETE'])
+def delete_artist(artist_id):
+
+  # Code Similar to delete_venue
+
+  error_deleting = False
+  artist2Delete = Artist.query.get(artist_id)
+  artist2Delete_name = artist2Delete.name
+  if not artist2Delete:
+    # Redirect home - URL doesn't exist
+    return redirect(url_for('index'))
+
+  else:  
+    try:
+        db.session.delete(artist2Delete)
+        db.session.commit()
+    except():
+        error_deleting = True
+        db.session.rollback()
+    finally:
+        db.session.close()
+    if error_deleting:
+        print("Error in delete_artist()")
+        flash(f'An error occurred while deleting artist {artist2Delete_name}.')
+        abort(500)
+    else:
+        return jsonify({
+          'deleted': True,
+          'url': url_for('artists')
+        })
+
 
 #  Shows
 #  ----------------------------------------------------------------
