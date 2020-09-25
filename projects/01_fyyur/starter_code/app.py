@@ -785,13 +785,13 @@ def edit_venue(venue_id):
     return redirect(url_for('index'))
   
   else:
-    form = VenueForm()
+    form = VenueForm(obj=venue)
     venue_info = Venue.info(venue)
     form.name.data = venue_info["name"]
     form.genres.data = venue_info["genres"]
     form.address.data = venue_info["address"]
     form.city.data = venue_info["city"]
-    form.state.data = venue_info['"state']
+    form.state.data = venue_info["state"]
     form.phone.data = venue_info["phone"]
     form.website.data = venue_info["website"]
     form.facebook_link.data = venue_info["facebook_link"]
