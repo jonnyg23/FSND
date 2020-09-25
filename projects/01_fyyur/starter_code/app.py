@@ -479,7 +479,7 @@ def create_venue_submission():
       print("Error in create_venue_submission()")
       abort(500)
 
-@app.route('/venues/<venue_id>/delete', methods=['DELETE'])
+@app.route('/venues/<venue_id>/delete', methods=['GET'])
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
@@ -925,7 +925,7 @@ def create_artist_submission():
       print("Error in create_artist_submission()")
       abort(500)
 
-@app.route('/artists/<artist_id>/delete', methods=['DELETE'])
+@app.route('/artists/<artist_id>/delete', methods=['GET'])
 def delete_artist(artist_id):
 
   # Code Similar to delete_venue
