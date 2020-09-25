@@ -2,7 +2,7 @@ from datetime import datetime
 from flask_wtf import Form
 import re
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField, ValidationError
-from wtforms.validators import DataRequired, AnyOf, URL, Length
+from wtforms.validators import DataRequired, AnyOf, URL, Length, StopValidation
 
 state_choices = [
             ('AL', 'AL'),
