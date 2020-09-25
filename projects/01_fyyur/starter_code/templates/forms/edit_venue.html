@@ -1,20 +1,9 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Edit Venue{% endblock %}
 {% block content %}
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-block alert-info fade in">
-          <a class="close" data-dismiss="alert">&times;</a>
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  
   <div class="form-wrapper">
     <form class="form" method="post" action="/venues/{{venue.id}}/edit">
-      <h3 class="form-heading">Edit venue <em>{{ venue.name }}</em> <a href="{{ url_for('index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
+      <h3 class="form-heading">Edit venue <em>{{ venue.name }}</em></h3>
       <div class="form-group">
         <label for="name">Name</label>
         {{ form.name(class_ = 'form-control', autofocus = true) }}
@@ -54,7 +43,7 @@
       <div class="form-group">
         <label for="seeking_description">Talent Description</label>
         <small>What talent are you searching for?</small>
-        {{ form.seeking_description(class_ = 'form-control, placeholder='Leave blank if not seeking a talent.', autofocus = true')}}
+        {{ form.seeking_description(class_ = 'form-control', placeholder='Leave blank if not seeking a talent.', autofocus = true) }}
       </div>
       <div class="form-group">
         <label for="website">Website</label>
