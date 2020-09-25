@@ -1017,38 +1017,33 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
-  error = False
-  body = {}
+  form = ShowForm()
+
+  artist_id = form.artist_id.data.strip()
+  venue_id = form.venue_id.data.strip()
+  start_time = form.start_time.data
+
   try:
-    artist_id = request.form['artist_id']
-    venue_id = request.form['venue_id']
-    start_time = request.form['start_time']
-
-    # db.session.query(db.exists().where(Artist.id == artist_id)).scalar()
-
-    show = Show(artist_id=artist_id,venue_id=venue_id,start_time=start_time)
-    db.session.add(show)
+    error_inserting = False
+    new_show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
+    
+    db.session.add(new_show)
     db.session.commit()
 
-    body['artist_id'] = show.artist_id
-    body['venue_id'] = show.venue_id
-    body['start_time'] = show.start_time
-
-    # on successful db insert, flash success
-    flash('Show was successfully listed!')
-  except():
+  except Exception as e:
+    error_inserting = True
+    print(f'Exception "{e}" in create_show_submission()')
     db.session.rollback()
-    error = True
+  
   finally:
-      db.session.close()
-  if error:
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Show could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    db.session.close()
 
-    flash('An error occurred. Show could not be listed.')
+  if error_inserting:
+    flash(f"An error occurred. Show couldn't be listed.")
   else:
-    return render_template('pages/home.html')
+    flash('Show was listed successfully!')
+  
+  return render_template('pages/home.html')
 
   
 
