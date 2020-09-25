@@ -52,7 +52,7 @@ class Venue(db.Model):
     genres = db.Column(db.ARRAY(db.String))
     shows = db.relationship('Show', backref='Venue', lazy='dynamic')
 
-    def __init__(self, name, genres, address, city, state, phone, website, facebook_link, image_link, seeking_talent=False, description=""):
+    def __init__(self, name, genres, address, city, state, phone, website, facebook_link, image_link, seeking_talent=False, seeking_description=""):
       self.name = name
       self.genres = genres
       self.city = city
@@ -62,7 +62,7 @@ class Venue(db.Model):
       self.image_link = image_link
       self.facebook_link = facebook_link
       self.website = website
-      self.description = description
+      self.seeking_description = seeking_description
 
     def short(self):
       """
@@ -95,12 +95,12 @@ class Venue(db.Model):
         "website": self.website,
         "facebook_link": self.facebook_link,
         "seeking_talent": self.seeking_talent,
-        "description": self.description,
+        "seeking_description": self.seeking_description,
         "image-link": self.image_link
       }
 
     def __repr__(self):
-        return f'<Venue ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
+        return f'<Venue ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, website: {self.website}, image_link: {self.image_link}, facebook_link: {self.facebook_link}, seeking_talent: {self.seeking_talent}, seeking_description: {self.seeking_description}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
