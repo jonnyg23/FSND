@@ -706,8 +706,56 @@ def edit_artist(artist_id):
 def edit_artist_submission(artist_id):
   # TODO: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
+  form = ArtistForm(request.form)
 
-  return redirect(url_for('show_artist', artist_id=artist_id))
+  name = form.name.data.strip()
+  city = form.city.data.strip()
+  state = form.state.data
+  phone = form.phone.data
+  phone = re.sub('\D','', phone) # Take away anything that isn't a #
+  genres = form.genres.data
+  seeking_talent = True if form.seeking_talent.data == 'Yes' else False
+  seeking_description = form.seeking_description.data.strip()
+  image_link = form.image_link.data.strip()
+  facebook_link = form.facebook_link.data.strip()
+  website = form.website.data.strip()
+
+    if not form.validate():
+      flash( form.errors )
+      return redirect(url_for('edit_artist_submission', artist_id=artist_id))
+
+    else:
+      error_updating = False
+      try:
+        artist = Artist.query.get(artist_id)
+
+        artist.name = name
+        artist.city = city
+        artist.state = state
+        artist.phone = phone
+        artist.genres = genres
+        artist.seeking_venue = seeking_venue
+        artist.seeking_description = seeking_description
+        artist.image_link = image_link
+        artist.website = website
+        artist.facebook_link = facebook_link
+
+        db.session.commit()
+
+        except Exception as e:
+          error_updating = True
+          print(f'Exception "{e}" in edit_artist_submission()')
+          db.session.rollback()
+        finally:
+          db.session.close()
+
+        if not error_updating:
+          flash('Artist ' + request.form['name'] + ' was updated successfully!')
+          return redirect(url_for('show_artist', artist_id=artist_id))
+        else:
+          flash('An error occurred. Artist ' + name + ' could not be updated.')
+          abort(500)
+
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
