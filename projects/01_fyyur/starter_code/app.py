@@ -192,7 +192,7 @@ class Show(db.Model):
     Shows Artist id, name, image_link, and start time.
     """
     return{
-      "artist_id": self.venue_id,
+      "artist_id": self.artist_id,
       "artist_name": self.Artist.name,
       "artist_image_link": self.Artist.image_link,
       "start_time": self.start_time
@@ -660,6 +660,7 @@ def show_artist(artist_id):
 
   else:
     return render_template('errors/404.html')
+
 
 #  Update
 #  ----------------------------------------------------------------
