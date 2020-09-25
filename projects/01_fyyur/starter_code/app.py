@@ -484,20 +484,25 @@ def delete_venue(venue_id):
   error = False
   try:
       venue2Delete = Venue.query.get(venue_id)
+      venue2Delete_name = venue2Delete.name
       for artists2Delete in venue2Delete.artists:
           db.session.delete(artists2Delete)
         
       db.session.delete(venue2Delete)
       db.session.commit()
   except():
-      db.session.rollback()
       error = True
+      db.session.rollback()
   finally:
       db.session.close()
   if error:
-      abort(500)
+      flash(f'An error occurred while deleting venue {venue_name}.')
+      return render_template('errors/500.html')
   else:
-      return render_template('pages/home.html')
+      return jsonify({
+        'deleted': True,
+        'url': url_for('venues')
+      })
 
 #  Artists
 #  ----------------------------------------------------------------
