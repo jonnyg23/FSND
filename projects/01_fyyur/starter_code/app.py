@@ -687,21 +687,23 @@ def edit_artist(artist_id):
     return redirect(url_for('index'))
   else:
     # Artist is valid, proceed to populate form
-    form = ArtistForm()
+    form = ArtistForm(obj=artist_data)
   
   if artist_data:
 
-    artist_info = Artist.info(artist_data)
-    form.name.data = artist_info["name"]
-    form.genres.data = artist_info["genres"]
-    form.city.data = artist_info["city"]
-    form.state.data = artist_info["state"]
-    form.phone.data = artist_info["phone"]
-    form.website.data = artist_info["website"]
-    form.facebook_link = artist_info["facebook_link"]
-    form.seeking_venue = artist_info["seeking_venue"]
-    form.seeking_description = artist_info["seeking_description"]
-    form.image_link = artist_info["image_link"]
+    artist_info = {
+        "id": artist_id,
+        "name": artist_data.name,
+        "genres": artist_data.genres,
+        "city": artist_data.city,
+        "state": artist_data.state,
+        "phone": (artist_data.phone[:3] + '-' + artist_data.phone[3:6] + '-' + artist_data.phone[6:]),
+        "website": artist_data.website,
+        "facebook_link": artist_data.facebook_link,
+        "seeking_venue": artist_data.seeking_venue,
+        "seeking_description": artist_data.seeking_description,
+        "image_link": artist_data.image_link
+    }
     
     return render_template('forms/edit_artist.html', form=form, artist=artist_info)
 
