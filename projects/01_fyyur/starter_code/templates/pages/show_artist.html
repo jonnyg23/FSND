@@ -71,6 +71,31 @@
 		{% endfor %}
 	</div>
 </section>
+<section>
+	<a href='/artists/{{ artist.id }}/edit'><button class="btn btn-default btn-sm">Edit Artist</button></a>
+	<button type="submit" onclick="deleteArtist(this)" data-id="{{ artist.id }}" class="btn btn-default btn-sm" style="width: 100px;">Delete Artist</button>
+</section>
+<script>
+	function deleteArtist(e) {
+		// AJAX server request to GET edit page
+        const delete_request = new XMLHttpRequest();
+        const url = `/artists/${artist_id}/delete`;
+        delete_request.open('GET', url);
 
+        // Callback on return
+        delete_request.onload = () => {
+            // Extract JSON data from request
+            const data = JSON.parse(delete_request.responseText);
+            
+            // If delete was successful then redirect
+            if (data['deleted'] == true) {
+                window.location.href = data['url'];
+            }
+        }
+        // Send request
+        delete_request.send( null );   // No data, url request
+        return false;
+	}
+</script>
 {% endblock %}
 
