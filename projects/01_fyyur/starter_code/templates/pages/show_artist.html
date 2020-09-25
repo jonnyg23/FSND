@@ -77,6 +77,7 @@
 </section>
 <script>
 	function deleteArtist(e) {
+		const artist_id = e.dataset.id;
 		// AJAX server request to GET edit page
         const delete_request = new XMLHttpRequest();
         const url = `/artists/${artist_id}/delete`;
