@@ -79,23 +79,63 @@ genre_choices = [
             ('Soul', 'Soul'),
             ('Other', 'Other'),
 ]
+class PhoneValidation(object):
+    """
+    This validator checks that the ''data'' attribute on the field is a valid phone number.
+    """
+    def __init__(self, message=None):
+        self.message = message
 
-class VenueForm(Form):
-    def phone_validation(self,form,field):
-        """
-        Ensures phone number is valid.
-        """
+    def __call__(self,form,field):
         if not re.search(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$", field.data):
-            raise ValidationError("Invalid Phone Number")
+            message = field.gettext('Enter a valid phone number.')
+        else:
+            message = self.message
+        
+        field.errors[:] = []
+        raise StopValidation(message)
+
+class GenreValidation(self, form, field):
+    """
+    This validator checks that the ''data'' attribute on the field has a valid genre.
+    """
+    def __init__(self, message=None):
+        self.message = message
     
-    def genres_validation(self,form, field):
-        """
-        Ensures genres are valid.
-        """
+    def __call__(self, form, field):
+        genre_choices = [
+            ('Alternative', 'Alternative'),
+            ('Blues', 'Blues'),
+            ('Classical', 'Classical'),
+            ('Country', 'Country'),
+            ('Electronic', 'Electronic'),
+            ('Folk', 'Folk'),
+            ('Funk', 'Funk'),
+            ('Hip-Hop', 'Hip-Hop'),
+            ('Heavy Metal', 'Heavy Metal'),
+            ('Instrumental', 'Instrumental'),
+            ('Jazz', 'Jazz'),
+            ('Musical Theatre', 'Musical Theatre'),
+            ('Pop', 'Pop'),
+            ('Punk', 'Punk'),
+            ('R&B', 'R&B'),
+            ('Reggae', 'Reggae'),
+            ('Rock n Roll', 'Rock n Roll'),
+            ('Soul', 'Soul'),
+            ('Other', 'Other'),
+        ]
         genres_values = [choice[1] for choice in genre_choices]
         for value in field.data:
             if value not in genres_values:
-                raise ValidationError("Invalid Genre Value")
+                message = field.gettext("Invalid Genre Value")
+            else:
+                message = self.message
+            
+            field.errors[:] = []
+            raise StopValidation(message)
+        
+
+class VenueForm(Form):
 
     name = StringField(
         'name', validators=[DataRequired()]
@@ -111,7 +151,7 @@ class VenueForm(Form):
         'address', validators=[DataRequired(), Length(max=120)]
     )
     phone = StringField(
-        'phone', validators=[DataRequired()]
+        'phone', validators=[DataRequired(), PhoneValidation()]
     )
     image_link = StringField(
         'image_link', validators=[DataRequired(), URL(), Length(max=500)]
@@ -138,21 +178,6 @@ class VenueForm(Form):
     )
 
 class ArtistForm(Form):
-    def phone_validation(self,form,field):
-        """
-        Ensures phone number is valid.
-        """
-        if not re.search(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$", field.data):
-            raise ValidationError("Invalid Phone Number")
-    
-    def genres_validation(self,form,field):
-        """
-        Ensures genres are valid.
-        """
-        genres_values = [choice[1] for choice in genre_choices]
-        for value in field.data:
-            if value not in genres_values:
-                raise ValidationError("Invalid Genre Value")
 
     name = StringField(
         'name', validators=[DataRequired(), Length(max=120)]
@@ -166,7 +191,7 @@ class ArtistForm(Form):
     )
     phone = StringField(
         # TODO implement validation logic for state
-        'phone', validators=[DataRequired()]
+        'phone', validators=[DataRequired(), PhoneValidation()]
     )
     image_link = StringField(
         'image_link', validators=[DataRequired(), URL(), Length(max=500)]
