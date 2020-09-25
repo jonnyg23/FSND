@@ -502,7 +502,7 @@ def delete_venue(venue_id):
         db.session.rollback()
     finally:
         db.session.close()
-    if error:
+    if error_deleting:
         print("Error in delete_venue()")
         flash(f'An error occurred while deleting venue {venue2Delete_name}.')
         abort(500)
