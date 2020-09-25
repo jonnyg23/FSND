@@ -638,7 +638,7 @@ def show_artist(artist_id):
   # }
   # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
 
-  artist_query = Venue.query.get(venue_id)
+  artist_query = Artist.query.get(artist_id)
 
   if artist_query:
     current_time = datetime.now().strftime('&Y-%m-%d %H:%M:%S')
