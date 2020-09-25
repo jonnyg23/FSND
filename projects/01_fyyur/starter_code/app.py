@@ -484,29 +484,33 @@ def delete_venue(venue_id):
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
+  # Deletes venue based on AJAX call
 
-  error = False
-  try:
-      venue2Delete = Venue.query.get(venue_id)
-      venue2Delete_name = venue2Delete.name
-      for artists2Delete in venue2Delete.artists:
-          db.session.delete(artists2Delete)
-        
-      db.session.delete(venue2Delete)
-      db.session.commit()
-  except():
-      error = True
-      db.session.rollback()
-  finally:
-      db.session.close()
-  if error:
-      flash(f'An error occurred while deleting venue {venue2Delete_name}.')
-      return render_template('errors/500.html')
-  else:
-      return jsonify({
-        'deleted': True,
-        'url': url_for('venues')
-      })
+  error_deleting = False
+  venue2Delete = Venue.query.get(venue_id)
+  venue2Delete_name = venue2Delete.name
+  if not venue2Delete:
+    # Redirect home if user faked call
+    return redirect(url_for('index'))
+
+  else:  
+    try:
+        db.session.delete(venue2Delete)
+        db.session.commit()
+    except():
+        error_deleting = True
+        db.session.rollback()
+    finally:
+        db.session.close()
+    if error:
+        print("Error in delete_venue()")
+        flash(f'An error occurred while deleting venue {venue2Delete_name}.')
+        abort(500)
+    else:
+        return jsonify({
+          'deleted': True,
+          'url': url_for('venues')
+        })
 
 #  Artists
 #  ----------------------------------------------------------------
