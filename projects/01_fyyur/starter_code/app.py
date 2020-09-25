@@ -16,6 +16,7 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
+import re
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -46,7 +47,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    description = db.Column(db.String(500), default='')
+    seeking_description = db.Column(db.String(500), default='')
     seeking_talent = db.Column(db.Boolean, default=False)
     website = db.Column(db.String(120))
     genres = db.Column(db.ARRAY(db.String))
@@ -429,49 +430,53 @@ def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
-  body = {}
-  try:
-    name = request.form['name']
-    city = request.form['city']
-    state = request.form['state']
-    address = request.form['address']
-    phone = request.form['phone']
-    genres = request.form.getlist('genres')
-    image_link = request.form['image_link']
-    facebook_link = request.form['facebook_link']
-    description = request.form['seeking_description']
-    seeking_talent = request.form['seeking_talent']
-    website = request.form['website']
+  form = VenueForm()
 
-    venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,image_link=image_link,facebook_link=facebook_link, description=description,seeking_talent=seeking_talent,website=website)
-    db.session.add(venue_submission)
-    db.session.commit()
+  name = form.name.data.strip()
+  city = form.city.data.strip()
+  state = form.state.data
+  address = form.address.data.strip()
+  phone = form.phone.data
+  phone = re.sub('\D','', phone) # Take away anything that isn't a #
+  genres = form.genres.data
+  seeking_talent = True if form.seeking_talent.data == 'Yes' else False
+  seeking_description = form.seeking_description.data.strip()
+  image_link = form.image_link.data.strip()
+  facebook_link = form.facebook_link.data.strip()
+  website = form.website.data.strip()
 
-    body['id'] = venue_submission.id
-    body['name'] = venue_submission.name
-    body['city'] = venue_submission.city
-    body['state'] = venue_submission.state
-    body['address'] = venue_submission.address
-    body['phone'] = venue_submission.phone
-    body['genres'] = venue_submission.genres
-    body['facebook_link'] = venue_submission.facebook_link
-    body['website'] = venue_submission.website
-    body['image_link'] = venue_submission.image_link
-    body['seeking_talent'] = venue_submission.seeking_talent
-    body['description'] = venue_submission.description
+  # Redirects to form if there are errors in the form validation
+  if not form.validate():
+    flash( form.errors )
+    return redirect(url_for('create_venue_submission'))
 
-    # on successful db insert, flash success
-    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  else:
+    try:
+      error_inserting = False
+      venue_submission = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,image_link=image_link,facebook_link=facebook_link, seeking_description=seeking_description,seeking_talent=seeking_talent,website=website)
+      db.session.add(venue_submission)
+      db.session.commit()
 
-  except SQLAlchemyError as e:
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-    flash('An error occurred. Venue ' + request.form['name'] + 'could not be listed.')
-    db.session.rollback()
-    db.session.close()
+    except Exception as e:
+      # TODO: on unsuccessful db insert, flash an error instead.
+      # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
+      # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+      error_inserting = True
+      print(f'Exception "{e}" in create_venue_submission()')
+      db.session.rollback()
     
-  return render_template('pages/home.html')
+    finally:
+      db.session.close()
+
+    if not error_inserting:
+      # on successful db insert, flash success
+      flash('Venue ' + request.form['name'] + ' was successfully listed!')
+      return redirect(url_for('index'))
+      
+    else:
+      flash('An error occurred. Venue ' + request.form['name'] + 'could not be listed.')
+      print("Error in create_venue_submission()")
+      abort(500)
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
