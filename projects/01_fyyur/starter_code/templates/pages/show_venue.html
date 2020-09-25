@@ -80,6 +80,7 @@
 </section>
 <script>
     function deleteVenue(e) {
+		const venue_id = e.dataset.id;
 		// AJAX server request to GET edit page
         const delete_request = new XMLHttpRequest();
         const url = `/venues/${venue_id}/delete`;
