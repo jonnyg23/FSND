@@ -720,41 +720,41 @@ def edit_artist_submission(artist_id):
   facebook_link = form.facebook_link.data.strip()
   website = form.website.data.strip()
 
-    if not form.validate():
-      flash( form.errors )
-      return redirect(url_for('edit_artist_submission', artist_id=artist_id))
+  if not form.validate():
+    flash( form.errors )
+    return redirect(url_for('edit_artist_submission', artist_id=artist_id))
 
-    else:
-      error_updating = False
-      try:
-        artist = Artist.query.get(artist_id)
+  else:
+    error_updating = False
+    try:
+      artist = Artist.query.get(artist_id)
 
-        artist.name = name
-        artist.city = city
-        artist.state = state
-        artist.phone = phone
-        artist.genres = genres
-        artist.seeking_venue = seeking_venue
-        artist.seeking_description = seeking_description
-        artist.image_link = image_link
-        artist.website = website
-        artist.facebook_link = facebook_link
+      artist.name = name
+      artist.city = city
+      artist.state = state
+      artist.phone = phone
+      artist.genres = genres
+      artist.seeking_venue = seeking_venue
+      artist.seeking_description = seeking_description
+      artist.image_link = image_link
+      artist.website = website
+      artist.facebook_link = facebook_link
 
-        db.session.commit()
+      db.session.commit()
 
-        except Exception as e:
-          error_updating = True
-          print(f'Exception "{e}" in edit_artist_submission()')
-          db.session.rollback()
-        finally:
-          db.session.close()
+      except Exception as e:
+        error_updating = True
+        print(f'Exception "{e}" in edit_artist_submission()')
+        db.session.rollback()
+      finally:
+        db.session.close()
 
-        if not error_updating:
-          flash('Artist ' + request.form['name'] + ' was updated successfully!')
-          return redirect(url_for('show_artist', artist_id=artist_id))
-        else:
-          flash('An error occurred. Artist ' + name + ' could not be updated.')
-          abort(500)
+      if not error_updating:
+        flash('Artist ' + request.form['name'] + ' was updated successfully!')
+        return redirect(url_for('show_artist', artist_id=artist_id))
+      else:
+        flash('An error occurred. Artist ' + name + ' could not be updated.')
+        abort(500)
 
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
