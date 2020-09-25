@@ -263,30 +263,37 @@ def venues():
   # }]
 
   data = []
-  venue_query = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
-  venue_location = ''
   current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
-  
+  venue_query = Venue.query.all()
+  venue_location = set()
   for venue in venue_query:
-    # show upcoming shows
-    upcoming_shows = venue.shows.filter(Show.start_time > current_time).all()
-    if venue_location == venue.state + venue.city:
-      data[len(data) - 1]["venues"].append({
-        "id": venue.id,
-        "name": venue.name,
-        "num_upcoming_shows": len(upcoming_shows)
-      })
-    else:
-      venue_location == venue.state + venue.state
-      data.append({
-        "city": venue.city,
-        "state": venue.state,
-        "venues": [{
+    venue_location.add( (venue.city, venue.state) )
+  
+  venue_location = list(venue_location)
+  venue_location.sort(key=itemgetter(1,0))
+
+  for location in venue_location:
+    venue_list = []
+    for venue in venue_query:
+      if (venue.city == location[0]) and (venue.state == location[1])
+        # If venue needs to be added, count number of upcoming shows for it
+        venue_shows = Show.query.filter_by(venue_id=venue.id).all()
+        num_upcoming_shows = 0
+        for show in venue_shows:
+          if show.start_time > current_time:
+            num_upcoming_shows += 1
+
+        venue_list.append({
           "id": venue.id,
           "name": venue.name,
-          "num_upcoming_shows": len(upcoming_shows)
-        }]
-      })
+          "num_upcoming_shows": num_upcoming_shows
+        })
+    # Add to data dictionary after adding venues to venue_list
+    data.append({
+      "city": location[0],
+      "state": location[1],
+      "venues": venue_list
+    })
 
   return render_template('pages/venues.html', areas=data)
 
