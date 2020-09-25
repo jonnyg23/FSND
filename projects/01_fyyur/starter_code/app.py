@@ -16,6 +16,7 @@ from flask_migrate import Migrate
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 import re
+from operator import itemgetter # sorting list of tuples
 
 #----------------------------------------------------------------------------#
 # App Config.
