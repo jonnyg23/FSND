@@ -742,19 +742,19 @@ def edit_artist_submission(artist_id):
 
       db.session.commit()
 
-      except Exception as e:
-        error_updating = True
-        print(f'Exception "{e}" in edit_artist_submission()')
-        db.session.rollback()
-      finally:
-        db.session.close()
+    except Exception as e:
+      error_updating = True
+      print(f'Exception "{e}" in edit_artist_submission()')
+      db.session.rollback()
+    finally:
+      db.session.close()
 
-      if not error_updating:
-        flash('Artist ' + request.form['name'] + ' was updated successfully!')
-        return redirect(url_for('show_artist', artist_id=artist_id))
-      else:
-        flash('An error occurred. Artist ' + name + ' could not be updated.')
-        abort(500)
+    if not error_updating:
+      flash('Artist ' + request.form['name'] + ' was updated successfully!')
+      return redirect(url_for('show_artist', artist_id=artist_id))
+    else:
+      flash('An error occurred. Artist ' + name + ' could not be updated.')
+      abort(500)
 
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
