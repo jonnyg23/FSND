@@ -275,7 +275,7 @@ def venues():
   for location in venue_location:
     venue_list = []
     for venue in venue_query:
-      if (venue.city == location[0]) and (venue.state == location[1])
+      if (venue.city == location[0]) and (venue.state == location[1]):
         # If venue needs to be added, count number of upcoming shows for it
         venue_shows = Show.query.filter_by(venue_id=venue.id).all()
         num_upcoming_shows = 0
