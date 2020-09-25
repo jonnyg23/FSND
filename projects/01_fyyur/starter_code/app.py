@@ -761,23 +761,47 @@ def edit_artist_submission(artist_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
-  form = VenueForm()
-  venue={
-    "id": 1,
-    "name": "The Musical Hop",
-    "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-    "address": "1015 Folsom Street",
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "123-123-1234",
-    "website": "https://www.themusicalhop.com",
-    "facebook_link": "https://www.facebook.com/TheMusicalHop",
-    "seeking_talent": True,
-    "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-    "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
-  }
+  
+  # venue={
+  #   "id": 1,
+  #   "name": "The Musical Hop",
+  #   "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
+  #   "address": "1015 Folsom Street",
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "phone": "123-123-1234",
+  #   "website": "https://www.themusicalhop.com",
+  #   "facebook_link": "https://www.facebook.com/TheMusicalHop",
+  #   "seeking_talent": True,
+  #   "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
+  #   "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
+  # }
   # TODO: populate form with values from venue with ID <venue_id>
-  return render_template('forms/edit_venue.html', form=form, venue=venue)
+
+  venue = Venue.query.get(venue_id)
+
+  if not venue:
+    # Redirect home - URL doesn't exist
+    return redirect(url_for('index'))
+  
+  else:
+    form = VenueForm()
+    venue_info = Venue.info(venue)
+    form.name.data = venue_info["name"]
+    form.genres.data = venue_info["genres"]
+    form.address.data = venue_info["address"]
+    form.city.data = venue_info["city"]
+    form.state.data = venue_info['"state']
+    form.phone.data = venue_info["phone"]
+    form.website.data = venue_info["website"]
+    form.facebook_link.data = venue_info["facebook_link"]
+    form.seeking_talent.data = venue_info["seeking_talent"]
+    form.seeking_description.data = venue_info["seeking_description"]
+    form.image_link.data = venue_info["image_link"]
+
+    return render_template('form/edit_venue.html', form=form, Venue=venue_info)
+
+  
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
