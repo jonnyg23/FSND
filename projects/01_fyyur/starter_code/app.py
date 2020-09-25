@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -496,7 +496,7 @@ def delete_venue(venue_id):
   finally:
       db.session.close()
   if error:
-      flash(f'An error occurred while deleting venue {venue_name}.')
+      flash(f'An error occurred while deleting venue {venue2Delete_name}.')
       return render_template('errors/500.html')
   else:
       return jsonify({
