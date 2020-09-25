@@ -1,46 +1,50 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Fyyur | Venues{% endblock %}
 {% block content %}
-{% for area in areas %}
-<h3>{{ area.city }}, {{ area.state }}</h3>
-	<ul class="items">
-		{% for venue in area.venues %}
-		<li>
-			<a href="/venues/{{ venue.id }}">
-				<i class="fas fa-music"></i>
-				<div class="item">
-					<h5>{{ venue.name }}</h5>
-				</div>
-				<button class="delete-venue" data-id="{{ venue.id }}">&cross;</button>
-			</a>
-		</li>
-		{% endfor %}
-	</ul>
+{% if areas %}
+	{% for area in areas %}
+	<h3>{{ area.city }}, {{ area.state }}</h3>
+		<ul class="items">
+			{% for venue in area.venues %}
+			<li>
+				<a href="/venues/{{ venue.id }}">
+					<i class="fas fa-music"></i>
+					<div class="item">
+						<h5>{{ venue.name }}</h5>
+					</div>
+					<button class="delete-venue" data-id="{{ venue.id }}">&cross;</button>
+				</a>
+			</li>
+			{% endfor %}
+		</ul>
 
-<script>
-	deleteVenueBtns = document.querySelectorAll(".delete-venue");
+	<script>
+		deleteVenueBtns = document.querySelectorAll(".delete-venue");
 
-for (let i = 0; i < deleteVenueBtns.length; i++) {
-  const deleteBtn = deleteVenueBtns[i];
-  deleteBtn.onclick = function(e) {
-	console.log("Delete event: ", e);
-	const venueId = e.target.dataset.id;
+	for (let i = 0; i < deleteVenueBtns.length; i++) {
+  	const deleteBtn = deleteVenueBtns[i];
+  	deleteBtn.onclick = function(e) {
+		console.log("Delete event: ", e);
+		const venueId = e.target.dataset.id;
 
-	fetch('/venues/'+ venueId + '/delete',{
-	  method: 'DELETE'
-	}).then(function() {
-	  console.log('Parent?', e.target);
-	  const item = e.target.parentElement;
-	  item.remove();
-		document.getElementById("error").className = "hidden";
-		window.location.reload(true);
-	})
-	.catch(function(e) {
-	  console.error(e);
-	  document.getElementById("error").className = "";
-	});
-  };
-}
-</script>
-{% endfor %}
+		fetch('/venues/'+ venueId + '/delete',{
+		  method: 'DELETE'
+		}).then(function() {
+	 	 console.log('Parent?', e.target);
+	 	 const item = e.target.parentElement;
+	  	item.remove();
+			document.getElementById("error").className = "hidden";
+			window.location.reload(true);
+		})
+		.catch(function(e) {
+	  	console.error(e);
+	  	document.getElementById("error").className = "";
+		});
+  	};
+	}
+	</script>
+	{% endfor %}
+{% else %}
+	<h3>No venues have been added. <a href="/venues/create">Create a new Venue!</a></h3>
+{% endif %}
 {% endblock %}
