@@ -490,7 +490,7 @@ def delete_venue(venue_id):
   venue2Delete = Venue.query.get(venue_id)
   venue2Delete_name = venue2Delete.name
   if not venue2Delete:
-    # Redirect home if user faked call
+    # Redirect home - URL doesn't exist
     return redirect(url_for('index'))
 
   else:  
@@ -663,22 +663,44 @@ def show_artist(artist_id):
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
-  form = ArtistForm()
-  artist={
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
-    "seeking_venue": True,
-    "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
+  
+  # artist={
+  #   "id": 4,
+  #   "name": "Guns N Petals",
+  #   "genres": ["Rock n Roll"],
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "phone": "326-123-5000",
+  #   "website": "https://www.gunsnpetalsband.com",
+  #   "facebook_link": "https://www.facebook.com/GunsNPetals",
+  #   "seeking_venue": True,
+  #   "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
+  #   "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
+  # }
   # TODO: populate form with fields from artist with ID <artist_id>
-  return render_template('forms/edit_artist.html', form=form, artist=artist)
+  artist_data = Artist.query.get(artist_id)
+  if not artist_data:
+    # Redirect home - URL doesn't exist
+    return redirect(url_for('index'))
+  else:
+    # Artist is valid, proceed to populate form
+    form = ArtistForm()
+  
+  if artist_data:
+
+    artist_info = Artist.info(artist_data)
+    form.name.data = artist_info["name"]
+    form.genres.data = artist_info["genres"]
+    form.city.data = artist_info["city"]
+    form.state.data = artist_info["state"]
+    form.phone.data = artist_info["phone"]
+    form.website.data = artist_info["website"]
+    form.facebook_link = artist_info["facebook_link"]
+    form.seeking_venue = artist_info["seeking_venue"]
+    form.seeking_description = artist_info["seeking_description"]
+    form.image_link = artist_info["image_link"]
+    
+    return render_template('forms/edit_artist.html', form=form, artist=artist_info)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
