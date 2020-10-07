@@ -33,6 +33,8 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+
+    # Used Test-Driven-Development in the making of this API
     
     # Test if '/categories' endpoint can handle GET requests & sends 404 error for a non existing category
     def test_get_categories(self):
@@ -70,11 +72,22 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
 
-    
-
-
     # Test if clicking trash icon next to question removes question from database and on page refresh
-    
+    def test_delete_question(self):
+        # Found Question objects' input datatypes from models.py and FormView.js
+        question = Question(question='test question', answer='test answer', difficulty=1, category=1)
+        question_id = question.id
+        question.insert() # Add and commit to database session
+
+        res = self.client().delete(f'/questions/{question_id}')
+        data = json.loads(res.data)
+
+        question_query = Question.query.filter(Question.id == question_id).one_or_none()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['deleted'], str(question_id))
+        self.assertEqual(question_query, None)    
 
 
 # Make the tests conveniently executable
