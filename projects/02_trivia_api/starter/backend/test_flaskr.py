@@ -33,7 +33,7 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-
+    # Test if questions and categories are generated 10 questions per page and pagination at bottom of screen for 3 pages on starting application
     def test_get_paginated_questions(self):
         res = self.client().get('/questions')
         data = json.loads(res.data)
@@ -45,12 +45,32 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['categories']))
 
     def test_404_sent_requesting_beyond_valid_page(self):
-        res = self.client().get('/questions?page=1000', json={'rating': 1})
+        res = self.client().get('/questions?page=1000')
         data = json.loads(res.data)
     
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
+
+    def test_get_categories(self):
+        res = self.client().get('/categories')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['categories']))
+
+    def test_404_sent_requesting_non_existing_category(self):
+        res = self.client().get('/categories/1000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
+
+
+    # Test if clicking trash icon next to question removes question from database and on page refresh
+    
 
 
 # Make the tests conveniently executable
