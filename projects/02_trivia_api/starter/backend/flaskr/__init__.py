@@ -93,9 +93,23 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
+    """
+    Deletes a question from database.
+
+    Tested with:
+        Success:
+            - test_delete_question
+        Error:
+            - test_422_sent_deleting_non_existing_question
+    """
+    
     try:
         # Query the question id from database
-        question = Question.query.get(question_id)
+        question = Question.query.filter(Question.id == question_id).one_or_none()
+
+        if not question:
+            # If no question found with id, raise 404
+            abort(400)
         # Delete the question by referencing question id
         question.delete()
 
