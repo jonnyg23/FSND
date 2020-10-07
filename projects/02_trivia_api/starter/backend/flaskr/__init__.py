@@ -41,9 +41,19 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  # Default method is GET if none specified
-  @app.route('/categories')
+
+  @app.route('/categories', methods=['GET'])
   def retrieve_categories():
+    """
+    Returns categories from database.
+
+    Tested with:
+      Success:
+          - test_get_categories
+      Error:
+          - test_404_sent_requesting_non_existing_category
+    """
+
     categories = Category.query.order_by(Category.id).all()
 
     if len(categories) == 0:
@@ -67,9 +77,18 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
-  # Default method is GET if none specified
-  @app.route('/questions')
+  
+  @app.route('/questions', methods=['GET'])
   def retrieve_questions():
+    """
+    Returns paginated questions from database.
+
+    Tested with:
+      Success:
+          - test_get_paginated_questions
+      Error:
+          - test_404_sent_requesting_beyond_valid_page
+    """
     selection = Question.query.order_by(Question.id).all()
     categories = Category.query.order_by(Category.id).all()
     current_questions = paginate_questions(request, selection)
@@ -91,7 +110,7 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
-  
+
   @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
     """
