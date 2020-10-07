@@ -75,7 +75,7 @@ class TriviaTestCase(unittest.TestCase):
     # Test if clicking trash icon next to question removes question from database and on page refresh
     def test_delete_question(self):
         # Found Question objects' input datatypes from models.py and FormView.js
-        question = Question(question='test question', answer='test answer', difficulty=1, category=1)
+        question = Question(question='test question', answer='test answer', category='1', difficulty=1)
         question_id = question.id
         question.insert() # Add and commit to database session
 
