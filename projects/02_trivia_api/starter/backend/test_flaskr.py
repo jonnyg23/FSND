@@ -33,10 +33,11 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-
+#----------------------------------------------------------------------------#
     # Used Test-Driven-Development in the making of this API
     
     # Test if '/categories' endpoint can handle GET requests & sends 404 error for a non existing category
+#----------------------------------------------------------------------------#
     def test_get_categories(self):
         res = self.client().get('/categories')
         data = json.loads(res.data)
@@ -53,7 +54,9 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
 
-    # Test if questions and categories are generated 10 questions per page and pagination at bottom of screen for 3 pages on starting application
+#----------------------------------------------------------------------------#
+# Test if questions and categories are generated 10 questions per page and pagination at bottom of screen for 3 pages on starting application
+#----------------------------------------------------------------------------#
     def test_get_paginated_questions(self):
         res = self.client().get('/questions')
         data = json.loads(res.data)
@@ -71,8 +74,9 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
-
+#----------------------------------------------------------------------------#
     # Test if clicking trash icon next to question removes question from database and on page refresh
+#----------------------------------------------------------------------------#
     def test_delete_question(self):
         # Found Question objects' input datatypes from psql trivia_test database tables
         question = Question(question='test question', answer='test answer', category=1, difficulty=1)
