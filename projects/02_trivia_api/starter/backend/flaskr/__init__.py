@@ -9,6 +9,16 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 def paginate_questions(request, selection):
+  """
+  Paginates Questions
+  --------------------
+  Inputs <datatype>:
+      request <HTTP Object>: This is the request for getting page number
+      selection <list>: Question selection from database
+
+  Returns:
+      current_questions <list>: 10 questions at a time from database
+  """
   page = request.args.get('page', 1, type=int)
   start = (page - 1) * QUESTIONS_PER_PAGE
   end = start + QUESTIONS_PER_PAGE
@@ -124,7 +134,7 @@ def create_app(test_config=None):
     """
     # Query the question id from database
     question = Question.query.filter(Question.id == question_id).one_or_none()
-    
+
     if not question:
         # If no question found with id, raise 404
         abort(400)
