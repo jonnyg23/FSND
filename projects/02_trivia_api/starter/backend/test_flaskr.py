@@ -93,13 +93,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['deleted'], str(question_id))
         self.assertEqual(question_query, None)  
 
-    def test_422_sent_deleting_non_existing_question(self):
+    def test_404_delete_question(self):
         res = self.client().delete('/questions/non_existing_question')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 422)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'unprocessable')
+        self.assertEqual(data['message'], "Question ID: non_existing_question doesn't exist")
 
 #----------------------------------------------------------------------------#
     # Test adding a question
