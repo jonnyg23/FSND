@@ -241,7 +241,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'error': 400,
-            'message': 'bad request'
+            'message': error_message(error, 'bad request')
         }), 400
   
     @app.errorhandler(404)
@@ -249,7 +249,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'error': 404,
-            'message': 'resource not found'
+            'message': error_message(error, 'resource not found')
         }), 404
   
     @app.errorhandler(405)
@@ -257,7 +257,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'error': 405,
-            'message': 'method not allowed'
+            'message': error_message(error, 'method not allowed')
         }), 405
   
     @app.errorhandler(422)
@@ -265,7 +265,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'error': 422,
-            'message': 'unprocessable'
+            'message': error_message(error, 'unprocessable')
         }), 422
 
     @app.errorhandler(500)
