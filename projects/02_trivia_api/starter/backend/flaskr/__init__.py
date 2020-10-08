@@ -8,6 +8,10 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+#----------------------------------------------------------------------------#
+    # Custom Methods
+#----------------------------------------------------------------------------#
+
 def error_message(error, text):
     """
     Gives default or custom text for the error.
@@ -42,6 +46,10 @@ def paginate_questions(request, selection):
   current_questions = questions[start:end]
 
   return current_questions
+
+#----------------------------------------------------------------------------#
+    # Setup Application & Create API Endpoints
+#----------------------------------------------------------------------------#
 
 def create_app(test_config=None):
   # create and configure the app
