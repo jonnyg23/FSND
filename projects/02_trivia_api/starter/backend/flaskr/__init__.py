@@ -8,6 +8,21 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def error_message(error, text):
+    """
+    Gives default or custom text for the error.
+    --------------------
+    Inputs <datatype>:
+        error <Error Object>: The error code
+        text <string>: Custom error text if error has no message
+    Returns <datatype>:
+        error description <string>: The custom error description or default
+    """
+    try:
+        return error.description['message']
+    except TypeError:
+        return text
+
 def paginate_questions(request, selection):
   """
   Paginates Questions
@@ -16,7 +31,7 @@ def paginate_questions(request, selection):
       request <HTTP Object>: This is the request for getting page number
       selection <list>: Question selection from database
 
-  Returns:
+  Returns <datatype>:
       current_questions <list>: 10 questions at a time from database
   """
   page = request.args.get('page', 1, type=int)
