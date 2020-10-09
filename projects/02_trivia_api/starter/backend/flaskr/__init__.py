@@ -100,7 +100,7 @@ def create_app(test_config=None):
         """
     
         categories = Category.query.order_by(Category.id).all()
-    
+        
         if len(categories) == 0:
             abort(404)
         
@@ -132,7 +132,7 @@ def create_app(test_config=None):
           Success:
               - test_get_paginated_questions
           Error:
-              - test_404_delete_question
+              - test_404_sent_requesting_beyond_valid_pag
         """
         selection = Question.query.order_by(Question.id).all()
         categories = Category.query.order_by(Category.id).all()
@@ -165,14 +165,14 @@ def create_app(test_config=None):
             Success:
                 - test_delete_question
             Error:
-                - test_422_sent_deleting_non_existing_question
+                - test_404_delete_question
         """
         # Query the question id from database
         question = Question.query.filter(Question.id == question_id).one_or_none()
     
         if not question:
             # If no question found with id, raise 404
-            abort(400)
+            abort(400, {'message': f'Questions with the {category_id} could not be found.'})
         
         try:
             # Delete the question by referencing question id
