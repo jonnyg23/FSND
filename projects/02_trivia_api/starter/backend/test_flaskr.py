@@ -39,6 +39,7 @@ class TriviaTestCase(unittest.TestCase):
     # Test if '/categories' endpoint can handle GET requests & sends 404 error for a non existing category
 #----------------------------------------------------------------------------#
     def test_get_categories(self):
+        """Test for retrieve_categories() GET /categories"""
         res = self.client().get('/categories')
         data = json.loads(res.data)
 
@@ -47,6 +48,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['categories']))
 
     def test_404_sent_requesting_non_existing_category(self):
+        """Test retrieve_categories() for non-existing category"""
         res = self.client().get('/categories/1000')
         data = json.loads(res.data)
 
@@ -58,6 +60,7 @@ class TriviaTestCase(unittest.TestCase):
 # Test if questions and categories are generated 10 questions per page and pagination at bottom of screen for 3 pages on starting application
 #----------------------------------------------------------------------------#
     def test_get_paginated_questions(self):
+        """Test retrieve_questions() GET /questions"""
         res = self.client().get('/questions')
         data = json.loads(res.data)
     
@@ -68,6 +71,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['categories']))
 
     def test_404_sent_requesting_beyond_valid_page(self):
+        """Test retrieve_questions() for invalid page request"""
         res = self.client().get('/questions?page=1000')
         data = json.loads(res.data)
     
@@ -78,6 +82,7 @@ class TriviaTestCase(unittest.TestCase):
     # Test if clicking trash icon next to question removes question from database and on page refresh
 #----------------------------------------------------------------------------#
     def test_delete_question(self):
+        """Test delete_question() DELETE /questions/<int:question_id>"""
         # Found Question objects' input datatypes from psql trivia_test database tables
         question = Question(question='test question', answer='test answer', category=1, difficulty=1)
         question.insert() # Add and commit to database session
@@ -94,6 +99,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(question_query, None)  
 
     def test_404_delete_question(self):
+        """Test delete_question() for non-existing ID"""
         res = self.client().delete(f'/questions/{123456789}')
         data = json.loads(res.data)
 
