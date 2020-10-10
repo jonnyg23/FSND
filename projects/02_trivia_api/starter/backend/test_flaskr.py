@@ -108,10 +108,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'Question ID: {123456789} does not exist.')
 
 #----------------------------------------------------------------------------#
-    # Test creating an endpoint to POST a new question. WHen submitting a question on "Add" tab, form will clear and question will appear at end of last page of questions list in the "List" tab
+    # Test creating an endpoint to POST a new question. WHen submitting a question on "Add" tab, form will clear and question will appear at end of last page of questions list in the "List" tab. Tests POST /questions
 #----------------------------------------------------------------------------#
     def test_add_question(self):
-        """Test add_question() POST /questions"""
+        """Test add_or_search_question() POST /questions"""
         # Create new question json
         new_question = {
             'question': 'New Question',
@@ -133,7 +133,7 @@ class TriviaTestCase(unittest.TestCase):
 
 
     def test_400_add_question(self):
-        """Test add_question() for missing parameter - prompt error 400"""
+        """Test add_or_search_question() for missing parameter - prompt error 400"""
         # Create new question with missing parameter -> difficulty
         new_question = {
             'question': 'New Question',
@@ -145,11 +145,37 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Not all parameters were included or exist.')
+        self.assertEqual(data['message'], 'Difficulty parameter is missing.')
 
 #----------------------------------------------------------------------------#
-    # 
+    # Test searching by any phrase. The question list will update to include only questions that include that string within question. Tests POST /questions for search term
 #----------------------------------------------------------------------------#
+    def test_search_question(self):
+        """Test add_or_search_question() POST /questions search term"""
+        search_term = {
+            'search_term': 'title'
+        }
+
+        res = self.client().post('/questions', json=search_term)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['questions'] > 0))
+        self.assertTrue(data['total_questions'] > 0)
+
+    def test_404_search_question(self):
+        """Test add_or_search_question() for non-existing search term"""
+        search_term = {
+            'search_term': 'this question does not exist.'
+        }
+        
+        res = self.client().post('/questions', json=search_term)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'There are no questions with the term this question does not exist found.')
 
 
 
