@@ -168,7 +168,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_404_search_question(self):
         """Test add_or_search_question() for non-existing search term"""
         search_term = {
-            'search_term': 'this question does not exist.'
+            'search_term': 'this question does not exist'
         }
         
         res = self.client().post('/questions', json=search_term)
