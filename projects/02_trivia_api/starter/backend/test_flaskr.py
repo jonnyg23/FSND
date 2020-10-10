@@ -48,7 +48,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['categories']))
 
     def test_404_sent_requesting_non_existing_category(self):
-        """Test retrieve_categories() for non-existing category"""
+        """Test retrieve_categories() for non-existing category - prompt error 404"""
         res = self.client().get('/categories/1000')
         data = json.loads(res.data)
 
@@ -71,7 +71,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['categories']))
 
     def test_404_sent_requesting_beyond_valid_page(self):
-        """Test retrieve_questions() for invalid page request"""
+        """Test retrieve_questions() for invalid page request - prompt error 404"""
         res = self.client().get('/questions?page=1000')
         data = json.loads(res.data)
     
@@ -99,7 +99,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(question_query, None)  
 
     def test_404_delete_question(self):
-        """Test delete_question() for non-existing ID"""
+        """Test delete_question() for non-existing ID - prompt error 404"""
         res = self.client().delete(f'/questions/{123456789}')
         data = json.loads(res.data)
 
@@ -108,7 +108,47 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'Question ID: {123456789} does not exist.')
 
 #----------------------------------------------------------------------------#
-    # Test adding a question
+    # Test creating an endpoint to POST a new question. WHen submitting a question on "Add" tab, form will clear and question will appear at end of last page of questions list in the "List" tab
+#----------------------------------------------------------------------------#
+    def test_add_question(self):
+        """Test add_question() POST /questions"""
+        # Create new question json
+        new_question = {
+            'question': 'New Question',
+            'answer': 'New Answer',
+            'category': 2,
+            'difficulty': 3
+        }
+        # Count total questions to compare after POST
+        question_count_initial = len(Question.query.all())
+        
+        res = self.client().post('/questions', json=new_question)
+        data = json.loads(res.data)
+
+        question_count_final = len(Question.query.all())
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(question_count_initial, question_count_final + 1)
+
+
+    def test_400_add_question(self):
+        """Test add_question() for missing parameter - prompt error 400"""
+        # Create new question with missing parameter -> difficulty
+        new_question = {
+            'question': 'New Question',
+            'answer': 'New Answer',
+            'category': 2,
+        }
+        res = self.client().post('/questions', json=new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Not all parameters were included or exist.')
+
+#----------------------------------------------------------------------------#
+    # 
 #----------------------------------------------------------------------------#
 
 
