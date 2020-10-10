@@ -80,26 +80,26 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question(self):
         # Found Question objects' input datatypes from psql trivia_test database tables
         question = Question(question='test question', answer='test answer', category=1, difficulty=1)
-        question_id = question.id
         question.insert() # Add and commit to database session
+        question_id = question.id
 
         res = self.client().delete(f'/questions/{question_id}')
         data = json.loads(res.data)
 
         question_query = Question.query.filter(Question.id == question_id).one_or_none()
-
+    
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'], str(question_id))
+        self.assertEqual(data['deleted'], question_id)
         self.assertEqual(question_query, None)  
 
     def test_404_delete_question(self):
-        res = self.client().delete('/questions/non_existing_question')
+        res = self.client().delete(f'/questions/{123456789}')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], "Question ID: non_existing_question doesn't exist")
+        self.assertEqual(data['message'], f'Question ID: {123456789} does not exist.')
 
 #----------------------------------------------------------------------------#
     # Test adding a question
