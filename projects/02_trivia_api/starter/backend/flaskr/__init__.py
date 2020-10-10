@@ -232,54 +232,49 @@ def create_app(test_config=None):
         new_difficulty = body.get('difficulty', None)
         search_term = body.get('search_term', None)
 
-        try:
-            # Query search_term if JSON body contains search term
-            if search_term:
-                search_results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+        # Query search_term if JSON body contains search term
+        if search_term:
+            search_results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
 
-                # Return 404 if search_term not found in questions
-                if not search_results:
-                    abort(404, {'message': f'There are no questions with the search term: {search_term}'})
-                
-                # If search_term successfully found questions, return JSON
-                return jsonify({
-                    'success': True,
-                    'questions': [question.format() for question in search_results],
-                    'total_questions': len(search_results),
-                    'current_category': None
-                })
+            # Return 404 if search_term not found in questions
+            if not search_results:
+                abort(404, {'message': f'There are no questions with the search term: {search_term}'})
             
-            else:
-                # Return 404 error if any parameters are missing
-                if not new_question:
-                    abort(400, {'message': 'Question parameter is missing'})
-    
-                if not new_answer:
-                    abort(400, {'message': 'Answer parameter is missing'})
-                
-                if not new_category:
-                    abort(400, {'message': 'Category parameter is missing'})
-                
-                if not new_difficulty:
-                    abort(400, {'message': 'Difficulty parameter is missing'})
+            # If search_term successfully found questions, return JSON
+            return jsonify({
+                'success': True,
+                'questions': [question.format() for question in search_results],
+                'total_questions': len(search_results),
+                'current_category': None
+            })
+               
+        # Return 400 error if any parameters are missing
+        if not new_question:
+            abort(400, {'message': 'Question parameter is missing.'})
 
-                question = Question(
-                    question = new_question,
-                    answer = new_answer,
-                    category = new_category,
-                    difficulty = new_difficulty
-                )
-                question.insert()
-    
-                selection = Question.query.order_by(Question.id).all()
-                current_questions = paginate_questions(request, selection)
-    
-                return jsonify({
-                    'success': True,
-                    'created': question.id,
-                    'books': current_questions,
-                    'total_questions': len(selection)
-                })
+        if not new_answer:
+            abort(400, {'message': 'Answer parameter is missing.'})
+        
+        if not new_category:
+            abort(400, {'message': 'Category parameter is missing.'})
+        
+        if not new_difficulty:
+            abort(400, {'message': 'Difficulty parameter is missing.'})
+
+        # Attempt adding new question to database
+        try:
+            question = Question(question=new_question,answer=new_answer,category=new_category,difficulty=new_difficulty)
+            question.insert()
+
+            selection = Question.query.order_by(Question.id).all()
+            current_questions = paginate_questions(request, selection)
+
+            return jsonify({
+                'success': True,
+                'created': question.id,
+                'books': current_questions,
+                'total_questions': len(selection)
+            })
 
         except:
             abort(422)
