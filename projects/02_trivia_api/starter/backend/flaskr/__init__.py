@@ -188,27 +188,103 @@ def create_app(test_config=None):
     
   
   
-    '''
-    @TODO: 
-    Create an endpoint to POST a new question, 
-    which will require the question and answer text, 
-    category, and difficulty score.
+    #'''
+    #Create an endpoint to POST a new question, 
+    #which will require the question and answer text, 
+    #category, and difficulty score.
   
-    TEST: When you submit a question on the "Add" tab, 
-    the form will clear and the question will appear at the end of the last page
-    of the questions list in the "List" tab.  
-    '''
+    #TEST: When you submit a question on the "Add" tab, 
+    #the form will clear and the question will appear at the end of the last page
+    #of the questions list in the "List" tab.  
+    #'''
+    # And.....
+    #''' 
+    #Create a POST endpoint to get questions based on a search term. 
+    #It should return any questions for whom the search term 
+    #is a substring of the question. 
   
-    '''
-    @TODO: 
-    Create a POST endpoint to get questions based on a search term. 
-    It should return any questions for whom the search term 
-    is a substring of the question. 
+    #TEST: Search by any phrase. The questions list will update to include 
+    #only question that include that string within their question. 
+    #Try using the word "title" to start. 
+    #'''
+
+    @app.route('/questions', methods=['POST'])
+    def add_or_search_question():
+        """
+        Adds question to database or searches for a question.
+    
+        Tested with:
+            Success:
+                - test_add_question
+                - test_search_question
+            Error:
+                - test_400_delete_question
+                - test_404_search_question
+        """
+        body = request.get_json()
+
+        if not body:
+            abort(400, {'message': 'Invalid JSON body'})
+        
+        new_question = body.get('question', None)
+        new_answer = body.get('answer', None)
+        new_category = body.get('category', None)
+        new_difficulty = body.get('difficulty', None)
+        search_term = body.get('search_term', None)
+
+        try:
+            # Query search_term if JSON body contains search term
+            if search_term:
+                search_results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+
+                # Return 404 if search_term not found in questions
+                if not search_results:
+                    abort(404, {'message': f'There are no questions with the search term: {search_term}'})
+                
+                # If search_term successfully found questions, return JSON
+                return jsonify({
+                    'success': True,
+                    'questions': [question.format() for question in search_results],
+                    'total_questions': len(search_results),
+                    'current_category': None
+                })
+            
+            else:
+                # Return 404 error if any parameters are missing
+                if not new_question:
+                    abort(400, {'message': 'Question parameter is missing'})
+    
+                if not new_answer:
+                    abort(400, {'message': 'Answer parameter is missing'})
+                
+                if not new_category:
+                    abort(400, {'message': 'Category parameter is missing'})
+                
+                if not new_difficulty:
+                    abort(400, {'message': 'Difficulty parameter is missing'})
+
+                question = Question(
+                    question = new_question,
+                    answer = new_answer,
+                    category = new_category,
+                    difficulty = new_difficulty
+                )
+                question.insert()
+    
+                selection = Question.query.order_by(Question.id).all()
+                current_questions = paginate_questions(request, selection)
+    
+                return jsonify({
+                    'success': True,
+                    'created': question.id,
+                    'books': current_questions,
+                    'total_questions': len(selection)
+                })
+
+        except:
+            abort(422)
   
-    TEST: Search by any phrase. The questions list will update to include 
-    only question that include that string within their question. 
-    Try using the word "title" to start. 
-    '''
+    
   
     '''
     @TODO: 
