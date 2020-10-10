@@ -172,7 +172,7 @@ def create_app(test_config=None):
     
         if not question:
             # If no question found with id, raise 404
-            abort(400, {'message': f'Question with the {question_id} could not be found.'})
+            abort(404, {'message': f'Question ID: {question_id} does not exist.'})
         
         try:
             # Delete the question by referencing question id
