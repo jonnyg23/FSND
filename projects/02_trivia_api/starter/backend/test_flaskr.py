@@ -175,7 +175,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'There are no questions with the term this question does not exist found.')
+        self.assertEqual(data['message'], 'There are no questions with the search term: this question does not exist')
 
 
 
