@@ -281,16 +281,44 @@ def create_app(test_config=None):
   
     
   
-    '''
-    @TODO: 
-    Create a GET endpoint to get questions based on category. 
+    #'''
+    #Create a GET endpoint to get questions based on category. 
   
-    TEST: In the "List" tab / main screen, clicking on one of the 
-    categories in the left column will cause only questions of that 
-    category to be shown. 
-    '''
-  
-  
+    #TEST: In the "List" tab / main screen, clicking on one of the 
+    #categories in the left column will cause only questions of that 
+    #category to be shown. 
+    #'''
+
+    @app.route('/categories/<int:category_id>/questons', methods=['GET'])
+    def retrieve_questions_by_category(category_id):
+        """
+        Retrieves questions from database based on desired category.
+    
+        Tested with:
+            Success:
+                - test_get_questions_by_category
+
+            Error:
+                - test_400_get_questions_by_category
+        """
+        try:
+            questions = Question.query.filter(Question.category == str(category_id)).order_by(Question.id).all()
+
+            # Check if there are questions with the category_id, if not abort 400
+            if not questions:
+                abort(400, {'message': f'Questions with the {category_id} category do not exist.'})
+
+            return jsonify({
+                'success': True,
+                'questions': [question.format() for question in questions],
+                'total_questions': len(questions),
+                'current_category': category_id
+            })
+
+        except:
+            abort(404, {'message': 'Selected page does not contain any questions.'})
+
+
     '''
     @TODO: 
     Create a POST endpoint to get questions to play the quiz. 
