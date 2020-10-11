@@ -183,7 +183,14 @@ class TriviaTestCase(unittest.TestCase):
 #----------------------------------------------------------------------------#
     def test_get_questions_by_category(self):
         """Test retrieve_questions_by_category() GET /category/category_id/questions"""
-        pass
+        res = self.client().get('/categories/1/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['current_category'], 1)
+        self.assertTrue(len(data['questions'] > 0))
+        self.assertTrue(data['total_questions'] > 0)
 
     def test_400_get_questions_by_category(self):
         """Test retrieve_questions_by_category() for questions with found category - prompt error 400"""
