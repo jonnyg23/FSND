@@ -289,7 +289,7 @@ def create_app(test_config=None):
     #category to be shown. 
     #'''
 
-    @app.route('/categories/<int:category_id>/questons', methods=['GET'])
+    @app.route('/categories/<string:category_id>/questions', methods=['GET'])
     def retrieve_questions_by_category(category_id):
         """
         Retrieves questions from database based on desired category.
@@ -301,22 +301,24 @@ def create_app(test_config=None):
             Error:
                 - test_400_get_questions_by_category
         """
-        try:
-            questions = Question.query.filter(Question.category == str(category_id)).order_by(Question.id).all()
+        questions = Question.query.filter(Question.category == str(category_id)).order_by(Question.id).all()
+        
 
-            # Check if there are questions with the category_id, if not abort 400
-            if not questions:
-                abort(400, {'message': f'Questions with the {category_id} category do not exist.'})
+        # Check if there are questions with the category_id, if not abort 400
+        if not questions:
+            abort(400, {'message': f'Questions with the {category_id} category do not exist.'})
 
-            return jsonify({
-                'success': True,
-                'questions': [question.format() for question in questions],
-                'total_questions': len(questions),
-                'current_category': category_id
-            })
-
-        except:
+        # Check if selected page contains questions, if not abort 404
+        current_questions = paginate_questions(request, questions)
+        if not current_questions:
             abort(404, {'message': 'Selected page does not contain any questions.'})
+
+        return jsonify({
+            'success': True,
+            'questions': current_questions,
+            'total_questions': len(questions),
+            'current_category': category_id
+        })
 
 
     '''
