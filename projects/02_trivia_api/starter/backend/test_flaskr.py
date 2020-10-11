@@ -166,7 +166,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'] > 0)
 
     def test_404_search_question(self):
-        """Test add_or_search_question() for non-existing search term"""
+        """Test add_or_search_question() for non-existing search term - prompt error 404"""
         search_term = {
             'search_term': 'this question does not exist'
         }
@@ -179,22 +179,32 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'There are no questions with the search term: this question does not exist')
 
 #----------------------------------------------------------------------------#
-    # Test GET endpoint to get questions based on category. Clicking on one of the categories in the left column in the "List" tab will cause only questions of that category to be shown. Tests GET /categories/#/questions
+    # Test GET endpoint to get questions based on category. Clicking on one of the categories in the left column in the "List" tab will cause only questions of that category to be shown. Tests GET /categories/category_id/questions
 #----------------------------------------------------------------------------#
     def test_get_questions_by_category(self):
-        pass
+        """Test retrieve_questions_by_category() GET /category/category_id/questions"""
 
-    def test_404_get_questions_by_category(self):
+    def test_400_get_questions_by_category(self):
+        """Test retrieve_questions_by_category() for questions with found category - prompt error 400"""
         pass
 
 #----------------------------------------------------------------------------#
     # Test POST endpoint to get questions to play the quiz. Takes category and previous question paramters and returns a random question within the given category if provided, and that is not one of the previous questions. Tests POST /quizzes
 #----------------------------------------------------------------------------#
-    def test_play_quiz(self):
+    def test_play_quiz_with_category(self):
+        """Test play_quiz() POST /quizzes with a category"""
+        pass
+
+    def test_play_quiz_without_category(self):
+        """Test play_quiz() POST /quizzes with no category"""
         pass
     
-    def test_404_play_quiz(self):
+    def test_400_play_quiz(self):
+        """Test play_quiz() if JSON body exists - prompt error 400"""
         pass
+
+    def test_405_play_quiz(self):
+        """Test play_quiz() if invalid method is allowed - prompt error 405"""
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
