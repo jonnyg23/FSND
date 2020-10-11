@@ -178,7 +178,23 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'There are no questions with the search term: this question does not exist')
 
+#----------------------------------------------------------------------------#
+    # Test GET endpoint to get questions based on category. Clicking on one of the categories in the left column in the "List" tab will cause only questions of that category to be shown. Tests GET /categories/#/questions
+#----------------------------------------------------------------------------#
+    def test_get_questions_by_category(self):
+        pass
 
+    def test_404_get_questions_by_category(self):
+        pass
+
+#----------------------------------------------------------------------------#
+    # Test POST endpoint to get questions to play the quiz. Takes category and previous question paramters and returns a random question within the given category if provided, and that is not one of the previous questions. Tests POST /quizzes
+#----------------------------------------------------------------------------#
+    def test_play_quiz(self):
+        pass
+    
+    def test_404_play_quiz(self):
+        pass
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
