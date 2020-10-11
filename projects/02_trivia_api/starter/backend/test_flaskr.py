@@ -183,6 +183,7 @@ class TriviaTestCase(unittest.TestCase):
 #----------------------------------------------------------------------------#
     def test_get_questions_by_category(self):
         """Test retrieve_questions_by_category() GET /category/category_id/questions"""
+        pass
 
     def test_400_get_questions_by_category(self):
         """Test retrieve_questions_by_category() for questions with found category - prompt error 400"""
@@ -205,6 +206,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_405_play_quiz(self):
         """Test play_quiz() if invalid method is allowed - prompt error 405"""
+        pass
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
