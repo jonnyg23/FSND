@@ -194,7 +194,12 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_400_get_questions_by_category(self):
         """Test retrieve_questions_by_category() for questions with found category - prompt error 400"""
-        pass
+        res = self.client().get('/categories/9999999999/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Questions with the 9999999999 category do not exist.')
 
 #----------------------------------------------------------------------------#
     # Test POST endpoint to get questions to play the quiz. Takes category and previous question paramters and returns a random question within the given category if provided, and that is not one of the previous questions. Tests POST /quizzes
