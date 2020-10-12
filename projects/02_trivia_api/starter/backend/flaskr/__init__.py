@@ -279,7 +279,7 @@ def create_app(test_config=None):
             return jsonify({
                 'success': True,
                 'created': question.id,
-                'books': current_questions,
+                'questions': current_questions,
                 'total_questions': len(selection)
             })
 
