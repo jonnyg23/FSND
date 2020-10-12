@@ -208,19 +208,53 @@ class TriviaTestCase(unittest.TestCase):
 #----------------------------------------------------------------------------#
     def test_play_quiz_with_category(self):
         """Test play_quiz() POST /quizzes with a category"""
-        pass
+        quiz_json = {
+            'previous_questions': [1,2,3],
+            'quiz_category': {
+                'type': 'Art',
+                'id': '2'
+            }
+        }
+
+        res = self.client().post('/quizzes', json=quiz_json)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question']['id'] not in quiz_json['previous_questions'])
+        self.assertTrue(data['question']['question'])
 
     def test_play_quiz_without_category(self):
         """Test play_quiz() POST /quizzes with no category"""
-        pass
+        quiz_json = {
+            'previous_questions': [1,2,3]
+        }
+
+        res = self.client().post('/quizzes', json=quiz_json)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question']['id'] not in quiz_json['previous_questions'])
+        self.assertTrue(data['question']['question'])
     
     def test_400_play_quiz(self):
         """Test play_quiz() if JSON body exists - prompt error 400"""
-        pass
+        res = self.client().post('/quizzes')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Use JSON body with previous question.')
 
     def test_405_play_quiz(self):
         """Test play_quiz() if invalid method is allowed - prompt error 405"""
-        pass
+        res = self.client().get('/quizzes')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'method not allowed'
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
