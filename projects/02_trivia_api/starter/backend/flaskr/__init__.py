@@ -226,10 +226,6 @@ def create_app(test_config=None):
         if not body:
             abort(400, {'message': 'Invalid JSON body'})
         
-        new_question = body.get('question', None)
-        new_answer = body.get('answer', None)
-        new_category = body.get('category', None)
-        new_difficulty = body.get('difficulty', None)
         search_term = body.get('search_term', None)
 
         # Query search_term if JSON body contains search term
@@ -248,6 +244,11 @@ def create_app(test_config=None):
                 'current_category': None
             })
                
+        new_question = body.get('question', None)
+        new_answer = body.get('answer', None)
+        new_category = body.get('category', None)
+        new_difficulty = body.get('difficulty', None)
+        
         # Return 400 error if any parameters are missing
         if not new_question:
             abort(400, {'message': 'Question parameter is missing.'})
