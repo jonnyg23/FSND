@@ -346,7 +346,38 @@ def create_app(test_config=None):
                 - test_400_play_quiz
                 - test_405_play_quiz
         """
-        pass
+        body = request.get_json()
+
+        if not body:
+            # Json body not given
+            abort(400, {'message': 'Use JSON body with previous question.'})
+
+        current_category = body.get('quiz_category', None)
+        previous_questions = body.get('previous_questions', None)
+
+        if not previous_questions:
+            if not current_category:
+                # Query all since, No previous question list given & no category
+                questions = Question.query.all()
+            else:
+                # Query filter since, No previous question list given, but a category was
+                questions = Question.query.filter(Question.category == str(current_category['id'])).all()
+
+        else:
+            if not current_category:
+                # Query questions not in previous_questions list since, previous question list was given, but no category
+                questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
+            else:
+                # Query questions in given category but not in previous_questions list since, previous question list was given & a category
+                questions = Question.query.filter(Question.category == str(current_category['id'])).filter(Question.id.notin_(previous_questions)).all()
+
+        # Format and randomize questions
+        new_question = questions[random.randrange(0, len(questions))].format() if len(questions) > 0 else None
+
+        return jsonify({
+            'success': True,
+            'question': new_question
+        })
 
 
     #'''
