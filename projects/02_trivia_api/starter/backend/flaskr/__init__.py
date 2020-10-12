@@ -321,18 +321,34 @@ def create_app(test_config=None):
         })
 
 
-    '''
-    @TODO: 
-    Create a POST endpoint to get questions to play the quiz. 
-    This endpoint should take category and previous question parameters 
-    and return a random questions within the given category, 
-    if provided, and that is not one of the previous questions. 
+    #''' 
+    #Create a POST endpoint to get questions to play the quiz. 
+    #This endpoint should take category and previous question parameters 
+    #and return a random questions within the given category, 
+    #if provided, and that is not one of the previous questions. 
   
-    TEST: In the "Play" tab, after a user selects "All" or a category,
-    one question at a time is displayed, the user is allowed to answer
-    and shown whether they were correct or not. 
-    '''
+    #TEST: In the "Play" tab, after a user selects "All" or a category,
+    #one question at a time is displayed, the user is allowed to answer
+    #and shown whether they were correct or not. 
+    #'''
   
+    @app.route('/quizzes', methods=['POST'])
+    def play_quiz():
+        """
+        Endpoint used to get questions in order to play the quiz.
+    
+        Tested with:
+            Success:
+                - test_play_with_category
+                - test_play_without_category
+
+            Error:
+                - test_400_play_quiz
+                - test_405_play_quiz
+        """
+        pass
+
+
     #'''
     #Create error handlers for all expected errors 
     #including 404 and 422. 
