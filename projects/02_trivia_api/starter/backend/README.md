@@ -66,6 +66,15 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
+## Testing
+To run the tests, run
+```
+dropdb trivia_test
+createdb trivia_test
+psql trivia_test < trivia.psql
+python test_flaskr.py
+```
+
 ## API Documentation
 
 This RESTful API documentation will reveal not only what endpoints there are, but also give an example of responses to each method request.
@@ -127,6 +136,19 @@ Retrieves paginated questions from database:
 $ curl -X GET http://127.0.0.1:5000/questions?page=2
 ```
 
+**Request Parameters**: `None`  
+**Returns**:  
+1. List of dictionary of questions with:  
+    * **integer** `id`
+    * **string** `question`
+    * **string** `answer`
+    * **string** `category`
+    * **integer** `difficulty`
+2. **boolean** `success`
+3. **integer** `total_questions`
+4. **list** `categories`
+5. **list** `current_category`
+
 #### Example Response
 
 ```js
@@ -162,27 +184,9 @@ $ curl -X GET http://127.0.0.1:5000/questions?page=2
       "id": 20, 
       "question": "What is the heaviest organ in the human body?"
     }, 
-    {
-      "answer": "Alexander Fleming", 
-      "category": 1, 
-      "difficulty": 3, 
-      "id": 21, 
-      "question": "Who discovered penicillin?"
-    }, 
-    {
-      "answer": "Blood", 
-      "category": 1, 
-      "difficulty": 4, 
-      "id": 22, 
-      "question": "Hematology is a branch of medicine involving the study of what?"
-    }, 
-    {
-      "answer": "Scarab", 
-      "category": 4, 
-      "difficulty": 4, 
-      "id": 23, 
-      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
-    }
+
+    [...]
+
   ], 
   "success": true, 
   "total_questions": 16
@@ -191,11 +195,82 @@ $ curl -X GET http://127.0.0.1:5000/questions?page=2
 
 #### Errors
 
+When attempting to get a page that has no questions, the request and response may appear as such:
+
+Request
+```bash
+$ curl -X GET http://127.0.0.1:5000/questions?page=1000
+```
+Response
+```js
+{
+  "error": 404, 
+  "message": "resource not found", 
+  "success": false
+}
+```
 
 # <a name="post_questions"></a>
 ### POST /questions
+This endpoint allows searching, as well as creating new questions. These requests using `curl` make look as such:  
+
+Adding a New Question
+```bash
+$ curl -X POST http://127.0.0.1:5000/questions -d '{ "question" : "Is this a test question?", "category" : "1" , "answer" : "Yes it is!", "difficulty" : 1 }' -H 'Content-Type: application/json'
+```
+
+Searching for Questions
+```bash
+$ curl -X POST http://127.0.0.1:5000/questions -d '{"search_term": "title"} -H 'Content-Type: application/json'
+```
+
+Attempts to search for questions using the search term, however, if no search term is given, then it will attempt to add a question to the database.
+
+
+**Request Parameters**:  
+1. If searching for questions:  
+    * **string** `search_term`  
+2. If adding new question:  
+    * **string** `question`
+    * **string** `answer`
+    * **string** `category`
+    * **integer** `difficulty`
+  
+**Returns**:  
+1. If searching for questions:
+    * **boolean** `success`
+    * List of dictionary of questions with:  
+      * **integer** `id`
+      * **string** `question`
+      * **string** `answer`
+      * **string** `category`
+      * **integer** `difficulty`
+    * **integer** `total_questions`
+    * List of dictionary of current_category which contains:
+      * **integer** `id`
+      * **string** `type`
+2. If adding new question:
+    * **boolean** `success`
+    * **integer** `created` inserted question id
+    * List of dictionary of questions with:  
+      * **integer** `id`
+      * **string** `question`
+      * **string** `answer`
+      * **string** `category`
+      * **integer** `difficulty`
+    * **integer** `total_questions`
 
 #### Example Response
+
+Adding a New Question
+```js
+
+```
+
+Searching for Questions
+```js
+
+```
 
 #### Errors
 
@@ -267,11 +342,3 @@ GET '/categories'
 ```
 
 
-## Testing
-To run the tests, run
-```
-dropdb trivia_test
-createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
-```
