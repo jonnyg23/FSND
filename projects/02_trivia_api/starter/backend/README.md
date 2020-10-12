@@ -137,6 +137,7 @@ $ curl -X GET http://127.0.0.1:5000/questions?page=2
 ```
 
 **Request Parameters**: `None`  
+
 **Returns**:  
 1. List of dictionary of questions with:  
     * **integer** `id`
@@ -216,7 +217,7 @@ This endpoint allows searching, as well as creating new questions. These request
 
 Adding a New Question
 ```bash
-$ curl -X POST http://127.0.0.1:5000/questions -d '{ "question" : "Is this a test question?", "category" : "1" , "answer" : "Yes it is!", "difficulty" : 1 }' -H 'Content-Type: application/json'
+$ curl -X POST http://127.0.0.1:5000/questions -d '{ "question" : "New Question", "category" : "2" , "answer" : "New Answer", "difficulty" : 3 }' -H 'Content-Type: application/json'
 ```
 
 Searching for Questions
@@ -264,6 +265,37 @@ Attempts to search for questions using the search term, however, if no search te
 
 Adding a New Question
 ```js
+{
+  "created": 25, 
+  "questions": [
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }, 
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }, 
+    {
+      "answer": "Brazil", 
+      "category": 6, 
+      "difficulty": 3, 
+      "id": 10, 
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    }, 
+    
+    [...]
+
+  ], 
+  "success": true, 
+  "total_questions": 18
+}
 
 ```
 
@@ -274,34 +306,220 @@ Searching for Questions
 
 #### Errors
 
+Error adding Questions:  
+* When adding a question, if not all parameters are included such as 'difficulty', then a `400 error` will be raised. This is viewed below with the following request and response.
+
+Request
+```bash
+$ curl -X POST http://127.0.0.1:5000/questions -d '{ "question" : "New Question", "answer" : "New Answer" , "category" : 2 }' -H 'Content-Type: application/json'
+```
+
+Response
+```js
+{
+  "error": 400, 
+  "message": "Difficulty parameter is missing.", 
+  "success": false
+}
+```
+
+Error Searching for Questions:
+* If a question does not exist with the given search term, then a 404 error will be raised.
+
+Request
+```bash
+$ curl -X POST http://127.0.0.1:5000/questions -d '{"search_term" : "this question does not exist"}' -H'Content-Type: application/json' 
+```
+
+Response
+```js
+{
+  "error": 404, 
+  "message": "There are no questions with the search term: this question does not exist", 
+  "success": false
+}
+```
 
 # <a name="delete_questions"></a>
 ### DELETE /questions/<question_id>
 
+This allows for deleting a question from the database. A `curl` request would look as such:  
+
+```bash
+$ curl -X DELETE http://127.0.0.1:5000/questions/10
+```
+
+**Request Parameters**: `None`  
+
+**Returns**:  
+1. **boolean** `success`
+2. **integer** `deleted`
+
 #### Example Response
+
+Response
+```js
+{
+  "deleted": 10, 
+  "success": true
+}
+```
 
 #### Errors
 
+The response will be a `400 error` if the question id does not exist. Below is the request and response for deleting a question with an id of 2. This id does not exist.
+
+Request
+```bash
+$ curl -X DELETE http://127.0.0.1:5000/questions/2
+```
+
+Response
+```js
+{
+  "error": 404, 
+  "message": "Question ID: 2 does not exist.", 
+  "success": false
+}
+```
 
 # <a name="get_categories"></a>
 ### GET /categories
 
+- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category. A `curl` request example is seen below.
+```bash
+$ curl -X GET http://127.0.0.1:5000/categories
+```
+
+Request Parameters: None  
+
+Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs.  
+
 #### Example Response
+
+```js
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "success": true
+}
+```
 
 #### Errors
 
+This endpoint does not raise an error.
 
 # <a name="get_categories_questions"></a>
 ### GET /categories/<category_id>/questions
 
+This gets all questions found in the desired category.
+
+```bash
+$ curl -X GET http://127.0.0.1:5000/categories/1/questions?page=1
+```
+**Request Parameters**: `None`  
+
+**Returns**:  
+1. **boolean** `success`
+2. List of dictionary of questions with:  
+    * **integer** `id`
+    * **string** `question`
+    * **string** `answer`
+    * **string** `category`
+    * **integer** `difficulty`
+3. **integer** `total_questions`
+4. **list** `current_category`
+
 #### Example Response
+
+```js
+{
+  "current_category": "1", 
+  "questions": [
+    {
+      "answer": "The Liver", 
+      "category": 1, 
+      "difficulty": 4, 
+      "id": 20, 
+      "question": "What is the heaviest organ in the human body?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "id": 21, 
+      "question": "Who discovered penicillin?"
+    }, 
+    {
+      "answer": "Blood", 
+      "category": 1, 
+      "difficulty": 4, 
+      "id": 22, 
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    }, 
+    {
+      "answer": "Yes it is!", 
+      "category": 1, 
+      "difficulty": 1, 
+      "id": 24, 
+      "question": "Is this a test question?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 4
+}
+
+```
 
 #### Errors
 
+Two errors are possible for requesting questions in a desired category.
+
+1. `404 Error` occurs if category is correct, but page number does not exist. Request and response are as follows:
+
+Request
+```bash
+$ curl -X GET http://127.0.0.1:5000/categories/1/questions?page=10
+```
+
+Response
+```js
+{
+  "error": 404, 
+  "message": "Selected page does not contain any questions.", 
+  "success": false
+}
+```
+
+2. `400 Error` occurs if page number exists, but category does not. Request and response are as follows:
+
+Request
+```bash
+$ curl -X GET http://127.0.0.1:5000/categories/999999999/questions?page=1
+```
+
+Response
+```js
+{
+  "error": 400, 
+  "message": "Questions with the 999999999 category do not exist.", 
+  "success": false
+}
+```
 
 # <a name="post_categories"></a>
 ### POST /categories
 
+This endpoint method is used to create a new category. The `curl` request example is as follows:  
+```bash
+$ curl -X POST http://127.0.0.1:5000/categories -d '{ "type" : "Nerd Stuff"}' -H 'Content-Type: application/json'
+```
 #### Example Response
 
 #### Errors
@@ -315,30 +533,5 @@ Searching for Questions
 #### Errors
 
 
-
-<br>
-
-REVIEW_COMMENT
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
-
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
-
-GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
-
-```
 
 
