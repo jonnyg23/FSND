@@ -236,19 +236,25 @@ def create_app(test_config=None):
             if not search_results:
                 abort(404, {'message': f'There are no questions with the search term: {search_term}'})
             
+            questions = [question.format() for question in search_results]
+            selection = Question.query.order_by(Question.id).all()
+
+            category_query = Category.query.all()
+            categories = [category.format() for category in category_query]
+
             # If search_term successfully found questions, return JSON
             return jsonify({
                 'success': True,
-                'questions': [question.format() for question in search_results],
-                'total_questions': len(search_results),
-                'current_category': None
+                'questions': questions,
+                'total_questions': len(selection),
+                'current_category': categories
             })
                
         new_question = body.get('question', None)
         new_answer = body.get('answer', None)
         new_category = body.get('category', None)
         new_difficulty = body.get('difficulty', None)
-        
+
         # Return 400 error if any parameters are missing
         if not new_question:
             abort(400, {'message': 'Question parameter is missing.'})
