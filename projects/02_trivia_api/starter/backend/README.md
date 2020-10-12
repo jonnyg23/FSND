@@ -221,7 +221,7 @@ $ curl -X POST http://127.0.0.1:5000/questions -d '{ "question" : "New Question"
 
 Searching for Questions
 ```bash
-$ curl -X POST http://127.0.0.1:5000/questions -d '{"search_term": "title"} -H 'Content-Type: application/json'
+$ curl -X POST http://127.0.0.1:5000/questions -d '{"search_term" : "title"}' -H 'Content-Type: application/json'
 ```
 
 Attempts to search for questions using the search term, however, if no search term is given, then it will attempt to add a question to the database.
@@ -300,7 +300,45 @@ Adding a New Question
 
 Searching for Questions
 ```js
-
+{
+  "current_category": [
+    {
+      "id": 1, 
+      "type": "Science"
+    }, 
+    {
+      "id": 2, 
+      "type": "Art"
+    }, 
+    {
+      "id": 3, 
+      "type": "Geography"
+    }, 
+    {
+      "id": 4, 
+      "type": "History"
+    }, 
+    {
+      "id": 5, 
+      "type": "Entertainment"
+    }, 
+    {
+      "id": 6, 
+      "type": "Sports"
+    }
+  ], 
+  "questions": [
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 17
+}
 ```
 
 #### Errors
