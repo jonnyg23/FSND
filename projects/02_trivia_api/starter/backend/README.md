@@ -66,6 +66,118 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
+## API Documentation
+
+This RESTful API documentation will reveal not only what endpoints there are, but also give an example of responses to each method request.
+
+### Getting Started
+
+* Base URL: At present this app can only be run locally and is not hosted as a base URL. The backend app is hosted at the default, **http://127.0.0.1:5000/**, which is set as a proxy in the frontend configuration. This is the domain which must be used when making API requests via `postman` or `curl`.
+* Authentication: This version of the application does not require authentication or API keys.
+
+### Error Handling
+
+Errors are returned as JSON objects in the following format:
+
+```js
+{
+    "success": False,
+    "error": 400,
+    "message": "bad request"
+}
+```
+
+The API will return the five error type default responses when requests fail (unless custom response is assigned):
+
+* 400: Bad Request
+* 404: Resource Not Found
+* 405: Method Not Allowed
+* 422: Not Processable
+* 500: Internal Server Error
+
+### Table of Endpoints
+
+Below is a table of the methods allowed for each of the 3 endpoints.
+
+| Endpoints   |     | Methods |        |
+|-------------|-----|---------|--------|
+|             | GET | POST    | DELETE |
+| /questions  | X   | X       | X      |
+| /categories | X   | X       |        |
+| /quizzes    |     | X       |        |
+
+### Endpoint Table of Contents
+
+1. Questions:
+    * [GET /questions](#get_questions)
+    * [POST /questions](#post_questions)
+    * [DELETE /questions/<question_id>](#delete_questions)
+2. Categories:
+    * [GET /categories](#get_categories)
+    * [GET /categories/<category_id>/questions](#get_categories_questions)
+    * [POST /categories](#post_categories)
+3. Quizzes:
+    * [POST /quizzes](#post_quizzes)
+
+# <a name="get_questions"></a>
+### GET /questions
+
+#### Example Response
+
+#### Errors
+
+
+# <a name="post_questions"></a>
+### POST /questions
+
+#### Example Response
+
+#### Errors
+
+
+# <a name="delete_questions"></a>
+### DELETE /questions/<question_id>
+
+#### Example Response
+
+#### Errors
+
+
+# <a name="get_categories"></a>
+### GET /categories
+
+#### Example Response
+
+#### Errors
+
+
+# <a name="get_categories_questions"></a>
+### GET /categories/<category_id>/questions
+
+#### Example Response
+
+#### Errors
+
+
+# <a name="post_categories"></a>
+### POST /categories
+
+#### Example Response
+
+#### Errors
+
+
+# <a name="post_quizzes"></a>
+### POST /quizzes
+
+#### Example Response
+
+#### Errors
+
+
+
+<br>
+
 REVIEW_COMMENT
 ```
 This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
