@@ -112,7 +112,7 @@ Below is a table of the methods allowed for each of the 3 endpoints.
 |-------------|-----|---------|--------|
 |             | GET | POST    | DELETE |
 | /questions  | X   | X       | X      |
-| /categories | X   | X       |        |
+| /categories | X   |         |        |
 | /quizzes    |     | X       |        |
 
 ### Endpoint Table of Contents
@@ -124,7 +124,6 @@ Below is a table of the methods allowed for each of the 3 endpoints.
 2. Categories:
     * [GET /categories](#get_categories)
     * [GET /categories/<category_id>/questions](#get_categories_questions)
-    * [POST /categories](#post_categories)
 3. Quizzes:
     * [POST /quizzes](#post_quizzes)
 
@@ -423,6 +422,7 @@ This gets all questions found in the desired category.
 ```bash
 $ curl -X GET http://127.0.0.1:5000/categories/1/questions?page=1
 ```
+
 **Request Parameters**: `None`  
 
 **Returns**:  
@@ -513,25 +513,58 @@ Response
 }
 ```
 
-# <a name="post_categories"></a>
-### POST /categories
-
-This endpoint method is used to create a new category. The `curl` request example is as follows:  
-```bash
-$ curl -X POST http://127.0.0.1:5000/categories -d '{ "type" : "Nerd Stuff"}' -H 'Content-Type: application/json'
-```
-#### Example Response
-
-#### Errors
-
-
 # <a name="post_quizzes"></a>
 ### POST /quizzes
 
+Play the Trivia Game!
+```bash
+$ curl -X POST http://127.0.0.1:5000/quizzes -d '{"previous_questions" : [1,2,3], "quiz_category" : {"type" : "Art", "id" : "2"}} ' -H 'Content-Type: application/json'
+```
+
+**Request Parameters**:  
+1. **list** `previous_questions`
+2. **integer** `quiz_category` 
+
+**Returns**:  
+1. **boolean** `success`
+2. One question as dictionary:  
+    * **integer** `id`
+    * **string** `question`
+    * **string** `answer`
+    * **string** `category`
+    * **integer** `difficulty`
+
 #### Example Response
+
+```js
+{
+  "question": {
+    "answer": "One", 
+    "category": 2, 
+    "difficulty": 4, 
+    "id": 18, 
+    "question": "How many paintings did Van Gogh sell in his lifetime?"
+  }, 
+  "success": true
+}
+```
 
 #### Errors
 
+`400 error` raised if JSON body is invalid. This request and response are shown below:  
 
+Request
+```bash
+$ curl -X POST http://127.0.0.1:5000/quizzes
+```
+
+Response
+```js
+{
+  "error": 400, 
+  "message": "Use JSON body with previous question.", 
+  "success": false
+}
+```
 
 
