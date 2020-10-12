@@ -118,16 +118,16 @@ Below is a table of the methods allowed for each of the 3 endpoints.
 ### Endpoint Table of Contents
 
 1. Questions:
-    * [GET /questions](#get_questions)
-    * [POST /questions](#post_questions)
-    * [DELETE /questions/<question_id>](#delete_questions)
+    * [GET /questions](#get-questions)
+    * [POST /questions](#post-questions)
+    * [DELETE /questions/<question_id>](#delete-questions)
 2. Categories:
-    * [GET /categories](#get_categories)
-    * [GET /categories/<category_id>/questions](#get_categories_questions)
+    * [GET /categories](#get-categories)
+    * [GET /categories/<category_id>/questions](#get-categories-questions)
 3. Quizzes:
-    * [POST /quizzes](#post_quizzes)
+    * [POST /quizzes](#post-quizzes)
 
-# <a name="get_questions"></a>
+# <a name="get-questions"></a>
 ### GET /questions
 
 Retrieves paginated questions from database:
@@ -210,7 +210,7 @@ Response
 }
 ```
 
-# <a name="post_questions"></a>
+# <a name="post-questions"></a>
 ### POST /questions
 This endpoint allows searching, as well as creating new questions. These requests using `curl` make look as such:  
 
@@ -377,7 +377,7 @@ Response
 }
 ```
 
-# <a name="delete_questions"></a>
+# <a name="delete-questions"></a>
 ### DELETE /questions/<question_id>
 
 This allows for deleting a question from the database. A `curl` request would look as such:  
@@ -420,7 +420,7 @@ Response
 }
 ```
 
-# <a name="get_categories"></a>
+# <a name="get-categories"></a>
 ### GET /categories
 
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category. A `curl` request example is seen below.
@@ -452,7 +452,7 @@ Returns: An object with a single key, categories, that contains a object of id: 
 
 This endpoint does not raise an error.
 
-# <a name="get_categories_questions"></a>
+# <a name="get-categories-questions"></a>
 ### GET /categories/<category_id>/questions
 
 This gets all questions found in the desired category.
@@ -551,7 +551,7 @@ Response
 }
 ```
 
-# <a name="post_quizzes"></a>
+# <a name="post-quizzes"></a>
 ### POST /quizzes
 
 Play the Trivia Game!
