@@ -218,7 +218,7 @@ def create_app(test_config=None):
                 - test_add_question
                 - test_search_question
             Error:
-                - test_400_delete_question
+                - test_400_add_question
                 - test_404_search_question
         """
         body = request.get_json()
@@ -226,7 +226,7 @@ def create_app(test_config=None):
         if not body:
             abort(400, {'message': 'Invalid JSON body'})
         
-        search_term = body.get('searchTerm', None)
+        search_term = body.get('search_term', None)
 
         # Query search_term if JSON body contains search term
         if search_term:
