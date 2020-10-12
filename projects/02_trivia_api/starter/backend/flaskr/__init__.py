@@ -226,7 +226,7 @@ def create_app(test_config=None):
         if not body:
             abort(400, {'message': 'Invalid JSON body'})
         
-        search_term = body.get('search_term', None)
+        search_term = body.get('searchTerm', None)
 
         # Query search_term if JSON body contains search term
         if search_term:
