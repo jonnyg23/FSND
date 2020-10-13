@@ -384,7 +384,7 @@ def create_app(test_config=None):
             body = request.get_json()
             # print(f'THIS IS THE BODY: {body}')
 
-            # If JSON body not given or there are empty parameters - 
+            # If JSON body not given or there are empty parameters -
             # raise 422 error
             if not body:
                 abort(422, {'message': 'unprocessable'})
@@ -401,21 +401,23 @@ def create_app(test_config=None):
                 # previous_questions list, hence the .notin_
                 questions = Question.query.filter(
                     Question.id.notin_((previous_questions))).all()
-            
+
             # If an actual category is selected and not "ALL", then query the
             # database for questions with the matching category id.
             else:
-                questions = Question.query.filter_by(
-                        category = current_category['id']).filter(
-                            Question.id.notin_((previous_questions))).all()
-            
+                questions = Question.query\
+                    .filter_by(category=current_category['id'])\
+                    .filter(Question.id.notin_((previous_questions)))\
+                    .all()
+
             # Choose a random question from list of questions if list is not
             # empty.
             if questions:
-                # Out of the list of questions, pick a random question using the
+                # Out of the list of questions,
+                # pick a random question using the
                 # random library choice method and then format it.
                 randomized_question = random.choice(questions).format()
-            
+
             else:
                 randomized_question = None
 
