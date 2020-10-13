@@ -589,7 +589,7 @@ $ curl -X POST http://127.0.0.1:5000/quizzes -d '{"previous_questions" : [1,2,3]
 
 #### Errors
 
-`400 error` raised if JSON body is invalid. This request and response are shown below:  
+`422 error` raised if JSON body is invalid. This request and response are shown below:  
 
 Request
 ```bash
@@ -599,8 +599,8 @@ $ curl -X POST http://127.0.0.1:5000/quizzes
 Response
 ```js
 {
-  "error": 400, 
-  "message": "Use JSON body with previous question.", 
+  "error": 422, 
+  "message": "unprocessable", 
   "success": false
 }
 ```
