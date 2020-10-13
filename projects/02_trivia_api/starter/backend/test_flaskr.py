@@ -206,8 +206,8 @@ class TriviaTestCase(unittest.TestCase):
 #----------------------------------------------------------------------------#
     # Test POST endpoint to get questions to play the quiz. Takes category and previous question paramters and returns a random question within the given category if provided, and that is not one of the previous questions. Tests POST /quizzes
 #----------------------------------------------------------------------------#
-    def test_play_quiz_with_category(self):
-        """Test play_quiz() POST /quizzes with a category"""
+    def test_play_quiz(self):
+        """Test play_quiz() POST /quizzes"""
         quiz_json = {
             'previous_questions': [1,2,3],
             'quiz_category': {
@@ -223,29 +223,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['question']['id'] not in quiz_json['previous_questions'])
         self.assertTrue(data['question']['question'])
-
-    def test_play_quiz_without_category(self):
-        """Test play_quiz() POST /quizzes with no category"""
-        quiz_json = {
-            'previous_questions': [1,2,3]
-        }
-
-        res = self.client().post('/quizzes', json=quiz_json)
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertTrue(data['question']['id'] not in quiz_json['previous_questions'])
-        self.assertTrue(data['question']['question'])
     
-    def test_400_play_quiz(self):
+    def test_422_play_quiz(self):
         """Test play_quiz() if JSON body exists - prompt error 400"""
         res = self.client().post('/quizzes')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Use JSON body with previous question.')
+        self.assertEqual(data['message'], 'unprocessable')
 
     def test_405_play_quiz(self):
         """Test play_quiz() if invalid method is allowed - prompt error 405"""
