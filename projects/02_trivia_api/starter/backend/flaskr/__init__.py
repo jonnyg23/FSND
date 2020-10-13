@@ -141,12 +141,17 @@ def create_app(test_config=None):
         if len(current_questions) == 0:
             abort(404)
         
+        categories_all = [category.format() for category in categories]
+        categories_return = []
+        for category in categories_all:
+            categories_return.append(category['type'])
+
         return jsonify({
             'success': True,
             'questions': current_questions,
             'total_questions': len(selection),
-            'categories': {category.id: category.type for category in categories},
-            'current_category': None
+            'categories': categories_return,
+            'current_category': categories_return
         })
   
     #''' 
@@ -346,45 +351,37 @@ def create_app(test_config=None):
     
         Tested with:
             Success:
-                - test_play_with_category
-                - test_play_without_category
+                - test_play_quiz
 
             Error:
-                - test_400_play_quiz
+                - test_422_play_quiz
                 - test_405_play_quiz
         """
-        body = request.get_json()
+        try:
+            body = request.get_json()
+            print(f'THIS IS THE BODY: {body}')
+        
+            if not ('previous_questions' in body and 'quiz_category' in body):
+                # Json body not given, empty
+                abort(422)
 
-        if not body:
-            # Json body not given
-            abort(400, {'message': 'Use JSON body with previous question.'})
+            previous_questions = body.get('previous_questions', None)
+            current_category = body.get('quiz_category', None)
 
-        current_category = body.get('quiz_category', None)
-        previous_questions = body.get('previous_questions', None)
-
-        if not previous_questions:
-            if not current_category:
-                # Query all since, No previous question list given & no category
-                questions = Question.query.all()
+            if current_category['type'] == 'click':
+                available_questions = Question.query.filter(Question.id.notin_((previous_questions))).all()
             else:
-                # Query filter since, No previous question list given, but a category was
-                questions = Question.query.filter(Question.category == str(current_category['id'])).all()
+                available_questions = Question.query.filter_by(category=current_category['id']).filter(Question.id.notin_((previous_questions))).all()
 
-        else:
-            if not current_category:
-                # Query questions not in previous_questions list since, previous question list was given, but no category
-                questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
-            else:
-                # Query questions in given category but not in previous_questions list since, previous question list was given & a category
-                questions = Question.query.filter(Question.category == str(current_category['id'])).filter(Question.id.notin_(previous_questions)).all()
+            new_question = available_questions[random.randrange(0, len(available_questions))].format() if len(available_questions) > 0 else None
 
-        # Format and randomize questions
-        new_question = questions[random.randrange(0, len(questions))].format() if len(questions) > 0 else None
-
-        return jsonify({
-            'success': True,
-            'question': new_question
-        })
+            return jsonify({
+                'success': True,
+                'question': new_question
+            })
+        
+        except:
+            abort(422)
 
 
     #'''
