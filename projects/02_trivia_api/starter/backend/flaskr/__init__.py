@@ -8,9 +8,9 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
-#----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 # Custom Methods
-#----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 
 
 def error_message(error, text):
@@ -49,9 +49,9 @@ def paginate_questions(request, selection):
 
     return current_questions
 
-#----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
     # Setup Application & Create API Endpoints
-#----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 
 
 def create_app(test_config=None):
@@ -61,7 +61,8 @@ def create_app(test_config=None):
     setup_db(app)
 
     # '''
-    # Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+    # Set up CORS. Allow '*' for origins.
+    # Delete the sample route after completing the TODOs
     # '''
     CORS(app)
 
@@ -74,7 +75,7 @@ def create_app(test_config=None):
         """
         Used to set Access-Control-Allow.
         --------------------
-        Inputs <datatype>: 
+        Inputs <datatype>:
           - None
 
         Returns <datatype>:
@@ -111,7 +112,8 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'categories': {category.id: category.type for category in categories}
+            'categories': {category.id: category.type
+                           for category in categories}
         })
 
     # '''
@@ -122,7 +124,8 @@ def create_app(test_config=None):
 
     # TEST: At this point, when you start the application
     # you should see questions and categories generated,
-    # ten questions per page and pagination at the bottom of the screen for three pages.
+    # ten questions per page and pagination at the bottom of
+    # the screen for three pages.
     # Clicking on the page numbers should update the questions.
     # '''
 
@@ -160,7 +163,8 @@ def create_app(test_config=None):
     # '''
     # Create an endpoint to DELETE question using a question ID.
 
-    # TEST: When you click the trash icon next to a question, the question will be removed.
+    # TEST: When you click the trash icon next to a question,
+    # the question will be removed.
     # This removal will persist in the database and when you refresh the page.
     # '''
 
@@ -181,7 +185,8 @@ def create_app(test_config=None):
 
         if not question:
             # If no question found with id, raise 404
-            abort(404, {'message': f'Question ID: {question_id} does not exist.'})
+            abort(404, {'message':
+                        f'Question ID: {question_id} does not exist.'})
 
         try:
             # Delete the question by referencing question id
@@ -201,7 +206,8 @@ def create_app(test_config=None):
     # category, and difficulty score.
 
     # TEST: When you submit a question on the "Add" tab,
-    # the form will clear and the question will appear at the end of the last page
+    # the form will clear and the question
+    # will appear at the end of the last page
     # of the questions list in the "List" tab.
     # '''
     # And.....
@@ -243,7 +249,12 @@ def create_app(test_config=None):
             # Return 404 if search_term not found in questions
             if not search_results:
                 abort(
-                    404, {'message': f'There are no questions with the search term: {search_term}'})
+                    404,
+                    {
+                        'message':
+                        f'No questions with the search term: {search_term}'
+                    }
+                )
 
             questions = [question.format() for question in search_results]
             selection = Question.query.order_by(Question.id).all()
@@ -279,8 +290,11 @@ def create_app(test_config=None):
 
         # Attempt adding new question to database
         try:
-            question = Question(question=new_question, answer=new_answer,
-                                category=new_category, difficulty=new_difficulty)
+            question = Question(
+                question=new_question,
+                answer=new_answer,
+                category=new_category,
+                difficulty=new_difficulty)
             question.insert()
 
             selection = Question.query.order_by(Question.id).all()
@@ -322,13 +336,19 @@ def create_app(test_config=None):
         # Check if there are questions with the category_id, if not abort 400
         if not questions:
             abort(
-                400, {'message': f'Questions with the {category_id} category do not exist.'})
+                400,
+                {
+                    'message':
+                    f'Questions with the {category_id} category do not exist.'
+                }
+            )
 
         # Check if selected page contains questions, if not abort 404
         current_questions = paginate_questions(request, questions)
         if not current_questions:
             abort(
-                404, {'message': 'Selected page does not contain any questions.'})
+                404, {'message':
+                      'Selected page does not contain any questions.'})
 
         return jsonify({
             'success': True,
@@ -376,11 +396,13 @@ def create_app(test_config=None):
                 available_questions = Question.query.filter(
                     Question.id.notin_((previous_questions))).all()
             else:
-                available_questions = Question.query.filter_by(category=current_category['id']).filter(
-                    Question.id.notin_((previous_questions))).all()
+                available_questions = Question.query.filter_by(
+                        category=current_category['id']).filter(
+                            Question.id.notin_((previous_questions))).all()
 
-            new_question = available_questions[random.randrange(
-                0, len(available_questions))].format() if len(available_questions) > 0 else None
+            new_question = available_questions[
+                random.randrange(0, len(available_questions))
+                ].format() if len(available_questions) > 0 else None
 
             return jsonify({
                 'success': True,
