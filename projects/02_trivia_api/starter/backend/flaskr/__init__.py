@@ -147,17 +147,16 @@ def create_app(test_config=None):
         if len(current_questions) == 0:
             abort(404)
 
-        categories_all = [category.format() for category in categories]
-        categories_return = []
-        for category in categories_all:
-            categories_return.append(category['type'])
+        categories_return = {
+            cat.id: cat.type for cat in categories
+            }
 
         return jsonify({
             'success': True,
             'questions': current_questions,
             'total_questions': len(selection),
             'categories': categories_return,
-            'current_category': categories_return
+            'current_category': None
         })
 
     # '''
