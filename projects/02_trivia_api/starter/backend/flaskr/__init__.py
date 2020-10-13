@@ -383,34 +383,52 @@ def create_app(test_config=None):
         """
         try:
             body = request.get_json()
-            print(f'THIS IS THE BODY: {body}')
+            # print(f'THIS IS THE BODY: {body}')
 
-            if not ('previous_questions' in body and 'quiz_category' in body):
-                # Json body not given, empty
-                abort(422)
+            # If JSON body not given or there are empty parameters - 
+            # raise 422 error
+            if not body:
+                abort(422, {'message': 'unprocessable'})
 
+            # Pre-allocate variables from JSON body
             previous_questions = body.get('previous_questions', None)
             current_category = body.get('quiz_category', None)
 
-            if current_category['type'] == 'click':
-                available_questions = Question.query.filter(
+            # If the "ALL" variable is selected, the 'id' retrieved from the
+            # 'quiz_category' frontend attribute should be equal to 0. This is
+            # basically another way of saying 'type'== 'click'.
+            if current_category['id'] == 0:
+                # Query database for all questions that do not exist in the
+                # previous_questions list, hence the .notin_
+                questions = Question.query.filter(
                     Question.id.notin_((previous_questions))).all()
+            
+            # If an actual category is selected and not "ALL", then query the
+            # database for questions with the matching category id.
             else:
-                available_questions = Question.query.filter_by(
-                        category=current_category['id']).filter(
+                questions = Question.query.filter_by(
+                        category = current_category['id']).filter(
                             Question.id.notin_((previous_questions))).all()
+            
+            # Choose a random question from list of questions if list is not
+            # empty.
+            if questions:
+                # Out of the list of questions, pick a random question using the
+                # random library choice method and then format it.
+                randomized_question = random.choice(questions).format()
+            
+            else:
+                randomized_question = None
 
-            new_question = available_questions[
-                random.randrange(0, len(available_questions))
-                ].format() if len(available_questions) > 0 else None
+            # print(f'randomized_question: {randomized_question}')
 
             return jsonify({
                 'success': True,
-                'question': new_question
+                'question': randomized_question
             })
 
         except:
-            abort(422)
+            abort(422, {'message': 'unprocessable'})
 
     # '''
     # Create error handlers for all expected errors
