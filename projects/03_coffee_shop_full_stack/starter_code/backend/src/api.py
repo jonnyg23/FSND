@@ -40,13 +40,16 @@ def retrieve_drinks():
     Tested with:
 
     """
-    selection = Drink.query.order_by(Drink.id).all()
-    drinks = [drink.short() for drink in selection]
+    try:
+        selection = Drink.query.order_by(Drink.id).all()
+        drinks = [drink.short() for drink in selection]
 
-    return jsonify({
-        'success': True,
-        'drinks': drinks
-    })
+        return jsonify({
+            'success': True,
+            'drinks': drinks
+        })
+    except:
+        abort(500)
 
 
 # '''
@@ -68,12 +71,17 @@ def retrieve_drinks_detail(payload):
     Tested with:
 
     """
-    selection = Drink.query.order_by(Drink.id).all()
-    drinks = [drink.long() for drink in selection]
-    return jsonify({
-        'success': True,
-        'drinks': drinks
-    })
+    try:
+        selection = Drink.query.order_by(Drink.id).all()
+        drinks = [drink.long() for drink in selection]
+        return jsonify({
+            'success': True,
+            'drinks': drinks
+        })
+    except:
+        return jsonify({
+            'success': False
+        })
 
 
 '''
