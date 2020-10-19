@@ -48,7 +48,8 @@ def retrieve_drinks():
             'success': True,
             'drinks': drinks
         })
-    except:
+    except Exception as e:
+        print(f'Exception "{e}" in retrieve_drinks()')
         abort(500)
 
 
@@ -79,13 +80,16 @@ def retrieve_drinks_detail(payload):
             'success': True,
             'drinks': drinks
         })
-    except:
+    except Exception as e:
+        print(f'Exception "{e}" in retrieve_drinks_detail()')
+
         return jsonify({
             'success': False
         })
 
 
 # '''
+# COMPLETED
 # @TODO implement endpoint
 #     POST /drinks
 #         it should create a new row in the drinks table
@@ -115,25 +119,24 @@ def create_drink():
         recipe = body.get('recipe', None)
 
         # Create a new drink, using body as inputs
-        new_drink = Drink(
+        drink = Drink(
             title=title,
             recipe=json.dumps(recipe)
         )
-        new_drink.insert()  # Insert into database
+        drink.insert()  # Insert into database
 
         return jsonify({
             'success': True,
-            'drinks': new_drink.long()
+            'drinks': drink.long()
         })
-        
-    except:
+
+    except Exception as e:
+        print(f'Exception "{e}" in create_drink()')
         db.session.rollback()
-        raise
 
     finally:
         db.session.close()
-
-
+        abort(500)
 
 
 '''
@@ -162,10 +165,6 @@ def create_drink():
 
 
 # Error Handling
-'''
-Example error handling for unprocessable entity
-'''
-
 
 @app.errorhandler(422)
 def unprocessable(error):
