@@ -4,7 +4,7 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS
 
-from .database.models import db_drop_and_create_all, setup_db, Drink
+from .database.models import db_drop_and_create_all, setup_db, Drink, db
 from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
@@ -53,6 +53,7 @@ def retrieve_drinks():
 
 
 # '''
+# COMPLETED
 # @TODO implement endpoint
 #     GET /drinks-detail
 #         it should require the 'get:drinks-detail' permission
@@ -84,15 +85,55 @@ def retrieve_drinks_detail(payload):
         })
 
 
-'''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
-'''
+# '''
+# @TODO implement endpoint
+#     POST /drinks
+#         it should create a new row in the drinks table
+#         it should require the 'post:drinks' permission
+#         it should contain the drink.long() data representation
+#     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
+#         or appropriate status code indicating reason for failure
+# '''
+
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def create_drink():
+    """
+    POST request to add a new drink to the database.
+    --------------------
+    Tested with:
+
+    """
+    body = request.get_json()
+
+    if not body:  # Invalid json body
+        abort(400)
+
+    try:
+        # Get parameters from body
+        title = body.get('title', None)
+        recipe = body.get('recipe', None)
+
+        # Create a new drink, using body as inputs
+        new_drink = Drink(
+            title=title,
+            recipe=json.dumps(recipe)
+        )
+        new_drink.insert()  # Insert into database
+
+        return jsonify({
+            'success': True,
+            'drinks': new_drink.long()
+        })
+        
+    except:
+        db.session.rollback()
+        raise
+
+    finally:
+        db.session.close()
+
+
 
 
 '''
