@@ -22,30 +22,92 @@ class AuthError(Exception):
 
 ## Auth Header
 
-'''
-@TODO implement get_token_auth_header() method
-    it should attempt to get the header from the request
-        it should raise an AuthError if no header is present
-    it should attempt to split bearer and the token
-        it should raise an AuthError if the header is malformed
-    return the token part of the header
-'''
+# '''
+# COMPLETED
+# @TODO implement get_token_auth_header() method
+#     it should attempt to get the header from the request
+#         it should raise an AuthError if no header is present
+#     it should attempt to split bearer and the token
+#         it should raise an AuthError if the header is malformed
+#     return the token part of the header
+# '''
+
 def get_token_auth_header():
-   raise Exception('Not Implemented')
+    """
+    Obtains the Access Token from the Authorization Header.
+    --------------------
+    Inputs <datatype>:
+        - None
+    Returns <datatype>:
+        - Token <string> OR Raises error code 401
+    """
+    auth = request.headers.get('Authorization', None)
+    if not auth:
+        raise AuthError({
+            'code': 'authorization_header_missing',
+            'description': 'Authorization header is expected.'
+        }, 401)
 
-'''
-@TODO implement check_permissions(permission, payload) method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-        payload: decoded jwt payload
+    parts = auth.split()
+    if parts[0].lower() != 'bearer':
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must start with "Bearer".'
+        }, 401)
 
-    it should raise an AuthError if permissions are not included in the payload
-        !!NOTE check your RBAC settings in Auth0
-    it should raise an AuthError if the requested permission string is not in the payload permissions array
-    return true otherwise
-'''
+    elif len(parts) == 1:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Token not found.'
+        }, 401)
+
+    elif len(parts) > 2:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must be bearer token.'
+        }, 401)
+
+    token = parts[1]
+    return token
+
+# '''
+# COMPLETED
+# @TODO implement check_permissions(permission, payload) method
+#     @INPUTS
+#         permission: string permission (i.e. 'post:drink')
+#         payload: decoded jwt payload
+
+#     it should raise an AuthError if permissions are
+#     not included in the payload
+#     !!NOTE check your RBAC settings in Auth0
+#     it should raise an AuthError if the requested
+#     permission string is not in the payload permissions array
+#     return true otherwise
+# '''
+
 def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+    """
+    Checks if permissions are included in the payload.
+    Raises AuthError otherwise.
+    --------------------
+    Inputs <datatype>:
+        - permission <string>: (i.e. 'post:drink')
+        - payload <string>: Decoded JWT payload
+    Returns <datatype>:
+        - True <boolean> OR Raises error codes 400 or 403
+    """
+    if 'permissions' not in payload:
+        raise AuthError({
+            'code': 'invalid_claims',
+            'description': 'Permissions not included in JWT.'
+        }, 400)
+
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
+        }, 403)
+    return True
 
 '''
 @TODO implement verify_decode_jwt(token) method
