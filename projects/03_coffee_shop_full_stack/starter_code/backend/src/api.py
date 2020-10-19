@@ -58,7 +58,21 @@ def retrieve_drinks():
 #         or appropriate status code indicating reason for failure
 # '''
 
+@app.route('/drinks-detail', methods=['GET'])
+@requires_auth('get:drinks-detail')
+def retrieve_drinks_detail(payload):
+    """
+    GET request to retrieve drink details from database.
+    --------------------
+    Tested with:
 
+    """
+    selection = Drink.query.order_by(Drink.id).all()
+    drinks = [drink.long() for drink in selection]
+    return jsonify({
+        'success': True,
+        'drinks': drinks
+    })
 
 
 '''
