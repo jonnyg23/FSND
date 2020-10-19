@@ -140,6 +140,7 @@ def create_drink(payload):
 
 
 # '''
+# COMPLETED
 # @TODO implement endpoint
 #     PATCH /drinks/<id>
 #         where <id> is the existing model id
@@ -195,16 +196,48 @@ def edit_drink(payload, id):
         abort(500)
 
 
-'''
-@TODO implement endpoint
-    DELETE /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
-'''
+# '''
+# @TODO implement endpoint
+#     DELETE /drinks/<id>
+#         where <id> is the existing model id
+#         it should respond with a 404 error if <id> is not found
+#         it should delete the corresponding row for <id>
+#         it should require the 'delete:drinks' permission
+#     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
+#         or appropriate status code indicating reason for failure
+# '''
+
+@app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def delete_drink(payload, id):
+    """
+    DELETE request to remove a drink from the database.
+    --------------------
+    Tested with:
+
+    """
+    drink_selected = Drink.query.filter(
+        Drink.id == id).one_or_none()
+
+    if not drink_selected:
+        # If drink not found in database with id, raise 404
+        abort(404)
+
+    try:
+        drink_selected.delete()
+
+        return jsonify({
+            'success': True,
+            'delete': id
+        })
+
+    except Exception as e:
+        print(f'Exception "{e}" in delete_drink()')
+        db.session.rollback()
+
+    finally:
+        db.session.close()
+        abort(500)
 
 
 # Error Handling
