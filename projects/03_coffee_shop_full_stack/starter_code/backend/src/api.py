@@ -101,7 +101,7 @@ def retrieve_drinks_detail(payload):
 
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def create_drink():
+def create_drink(payload):
     """
     POST request to add a new drink to the database.
     --------------------
@@ -153,14 +153,47 @@ def create_drink():
 
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def edit_drink(id):
+def edit_drink(payload, id):
     """
     PATCH request to edit drink in the database.
     --------------------
     Tested with:
 
     """
-    
+    # Query database for the selected id
+    drink_selected = Drink.query.filter(
+        Drink.id == id).one_or_none()
+
+    if not drink_selected:
+        # If drink not found in database with id, raise 404
+        abort(404)
+
+    # Get parameters from body
+    body = request.get_json()
+    title = body.get('title', None)
+    recipe = body.get('recipe', None)
+
+    try:
+        if title:
+            drink_selected.title = title
+        if recipe:
+            drink_selected.recipe = json.dumps(recipe)
+
+        drink_selected.update()
+
+        return jsonify({
+            'success': True,
+            'drinks': drink_selected.long()
+        })
+
+    except Exception as e:
+        print(f'Exception "{e}" in edit_drink()')
+        db.session.rollback()
+
+    finally:
+        db.session.close()
+        abort(500)
+
 
 '''
 @TODO implement endpoint
