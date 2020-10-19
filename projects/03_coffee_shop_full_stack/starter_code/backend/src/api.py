@@ -126,24 +126,72 @@ def unprocessable(error):
     }), 422
 
 
-'''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with appropriate messages):
-             jsonify({
-                    "success": False, 
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
+# '''
+# COMPLETED
+# @TODO implement error handlers using the @app.errorhandler(error) decorator
+#     each error handler should return (with appropriate messages):
+#         jsonify({
+#             "success": False, 
+#             "error": 404,
+#             "message": "resource not found"
+#             }), 404
 
-'''
+# '''
 
-'''
-@TODO implement error handler for 404
-    error handler should conform to general task above 
-'''
+# '''
+# @TODO implement error handler for 404
+#     error handler should conform to general task above 
+# '''
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }), 404
+
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "bad request"
+    }), 400
+
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": "unauthorized"
+    }), 401
+
+@app.errorhandler(403)
+def forbidden(error):
+    return jsonify({
+        "success": False,
+        "error": 403,
+        "message": "forbidden"
+    }), 403
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({
+        'success': False,
+        'error': 500,
+        'message': 'internal server error'
+    }), 500
 
 
-'''
-@TODO implement error handler for AuthError
-    error handler should conform to general task above 
-'''
+# '''
+# @TODO implement error handler for AuthError
+#     error handler should conform to general task above 
+# '''
+
+@app.errorhandler(AuthError)
+def auth_error(exception):
+    error_exception_json = jsonify(exception.error)
+    error_code = exception.status_code
+    
+    return error_exception_json, error_code
