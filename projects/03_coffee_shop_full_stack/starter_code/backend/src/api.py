@@ -95,7 +95,8 @@ def retrieve_drinks_detail(payload):
 #         it should create a new row in the drinks table
 #         it should require the 'post:drinks' permission
 #         it should contain the drink.long() data representation
-#     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
+#     returns status code 200 and json {"success": True, "drinks": drink}
+#     where drink an array containing only the newly created drink
 #         or appropriate status code indicating reason for failure
 # '''
 
@@ -148,7 +149,8 @@ def create_drink(payload):
 #         it should update the corresponding row for <id>
 #         it should require the 'patch:drinks' permission
 #         it should contain the drink.long() data representation
-#     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
+#     returns status code 200 and json {"success": True, "drinks": drink}
+#     where drink an array containing only the updated drink
 #         or appropriate status code indicating reason for failure
 # '''
 
