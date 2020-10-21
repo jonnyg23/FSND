@@ -14,6 +14,8 @@ API_AUDIENCE = 'coffee'
 AuthError Exception
 A standardized way to communicate auth failure modes
 '''
+
+
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
@@ -85,6 +87,7 @@ def get_token_auth_header():
 #     return true otherwise
 # '''
 
+
 def check_permissions(permission, payload):
     """
     Checks if permissions are included in the payload.
@@ -121,10 +124,11 @@ def check_permissions(permission, payload):
 #     it should validate the claims
 #     return the decoded payload
 
-#     !!NOTE urlopen has a common certificate error described here: 
+#     !!NOTE urlopen has a common certificate error described here:
 # https://stackoverflow.com/questions/50236117/
 # scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 # '''
+
 
 def verify_decode_jwt(token):
     """
@@ -203,18 +207,20 @@ def verify_decode_jwt(token):
 #       payload to the decorated method
 # '''
 
+
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            token = get_token_auth_header()
             try:
+                token = get_token_auth_header()
                 payload = verify_decode_jwt(token)
+                check_permissions(permission, payload)
+
+                return f(payload, *args, **kwargs)
+
             except:
                 abort(401)
 
-            check_permissions(permission, payload)
-
-            return f(payload, *args, **kwargs)
         return wrapper
     return requires_auth_decorator
