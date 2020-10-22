@@ -223,6 +223,7 @@ def edit_drink(payload, id):
 #         or appropriate status code indicating reason for failure
 # '''
 
+
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
 def delete_drink(payload, id):
@@ -255,6 +256,7 @@ def delete_drink(payload, id):
         db.session.rollback()
 
 # Error Handling
+
 
 @app.errorhandler(422)
 def unprocessable(error):
@@ -336,6 +338,7 @@ def internal_server_error(error):
 # @TODO implement error handler for AuthError
 #     error handler should conform to general task above
 # '''
+
 
 @app.errorhandler(AuthError)
 def auth_error(exception):
