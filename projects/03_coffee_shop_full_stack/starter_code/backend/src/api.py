@@ -17,7 +17,7 @@ CORS(app)
 # !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 # '''
 
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 # ROUTES
 # '''
@@ -38,17 +38,22 @@ def retrieve_drinks():
     GET request to retrieve drinks from database.
     --------------------
     Tested with:
-
+        - Auth0 'GET /drinks'
     """
     try:
+        # Query the database and order drinks by ids
         selection = Drink.query.order_by(Drink.id).all()
-        drinks = [drink.short() for drink in selection]
+        drinks = []
+        # Could use list comprehension
+        for drink in selection:
+            drinks.append(drink.short())
 
         return jsonify({
             'success': True,
             'drinks': drinks
         })
     except Exception as e:
+        # Print exception error as well as abort 500
         print(f'Exception "{e}" in retrieve_drinks()')
         abort(500)
 
@@ -71,21 +76,24 @@ def retrieve_drinks_detail(payload):
     GET request to retrieve drink details from database.
     --------------------
     Tested with:
-
+        - Auth0 GET /drinks-detail
     """
     try:
+        # Query the database and order drinks by ids
         selection = Drink.query.order_by(Drink.id).all()
-        drinks = [drink.long() for drink in selection]
+        drinks = []
+        # Could use list comprehension
+        for drink in selection:
+            drinks.append(drink.long())
+
         return jsonify({
             'success': True,
             'drinks': drinks
         })
     except Exception as e:
+        # Print exception error as well as abort 500
         print(f'Exception "{e}" in retrieve_drinks_detail()')
-
-        return jsonify({
-            'success': False
-        })
+        abort(500)
 
 
 # '''
@@ -107,24 +115,28 @@ def create_drink(payload):
     POST request to add a new drink to the database.
     --------------------
     Tested with:
-
+        - Auth0 'POST /drinks'
     """
+    # Retrieve the json body
     body = request.get_json()
 
-    if not body:  # Invalid json body
+    # If invalid json body, abort
+    if not body:
         abort(400)
 
+    # Get parameters from body
+    title = body.get('title', None)
+    recipe = body.get('recipe', None)
+
     try:
-        # Get parameters from body
-        title = body.get('title', None)
-        recipe = body.get('recipe', None)
 
         # Create a new drink, using body as inputs
         drink = Drink(
             title=title,
             recipe=json.dumps(recipe)
         )
-        drink.insert()  # Insert into database
+        # Insert into database
+        drink.insert()
 
         return jsonify({
             'success': True,
@@ -132,12 +144,9 @@ def create_drink(payload):
         })
 
     except Exception as e:
+        # Print exception error and rollback database
         print(f'Exception "{e}" in create_drink()')
         db.session.rollback()
-
-    finally:
-        db.session.close()
-        abort(500)
 
 
 # '''
@@ -161,27 +170,34 @@ def edit_drink(payload, id):
     PATCH request to edit drink in the database.
     --------------------
     Tested with:
-
+        - Auth0 'PATCH /drinks/<id>'
     """
     # Query database for the selected id
     drink_selected = Drink.query.filter(
         Drink.id == id).one_or_none()
 
     if not drink_selected:
-        # If drink not found in database with id, raise 404
+        # If drink not found in database with id, abort 404
         abort(404)
 
     # Get parameters from body
     body = request.get_json()
+
+    # If invalid json body, abort
+    if not body:
+        abort(400)
+
     title = body.get('title', None)
     recipe = body.get('recipe', None)
 
     try:
+        # If title or recipe is present, then update each correspondingly
         if title:
             drink_selected.title = title
         if recipe:
             drink_selected.recipe = json.dumps(recipe)
 
+        # Update database session (runs db.session.commit())
         drink_selected.update()
 
         return jsonify({
@@ -190,13 +206,9 @@ def edit_drink(payload, id):
         })
 
     except Exception as e:
+        # Print exception error and rollback database session
         print(f'Exception "{e}" in edit_drink()')
         db.session.rollback()
-
-    finally:
-        db.session.close()
-        abort(500)
-
 
 # '''
 # @TODO implement endpoint
@@ -205,7 +217,9 @@ def edit_drink(payload, id):
 #         it should respond with a 404 error if <id> is not found
 #         it should delete the corresponding row for <id>
 #         it should require the 'delete:drinks' permission
-#     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
+#     returns status code 200 and json
+#     {"success": True, "delete": id}
+#     where id is the id of the deleted record
 #         or appropriate status code indicating reason for failure
 # '''
 
@@ -216,16 +230,18 @@ def delete_drink(payload, id):
     DELETE request to remove a drink from the database.
     --------------------
     Tested with:
-
+        - Auth0 'DELETE /drinks/<id>'
     """
+    # Query database the drink with the chosen ID
     drink_selected = Drink.query.filter(
         Drink.id == id).one_or_none()
 
+    # If drink not found in database with id, raise 404
     if not drink_selected:
-        # If drink not found in database with id, raise 404
         abort(404)
 
     try:
+        # Attempt to delete the drink from database
         drink_selected.delete()
 
         return jsonify({
@@ -234,18 +250,15 @@ def delete_drink(payload, id):
         })
 
     except Exception as e:
+        # Print exception error and rollback database
         print(f'Exception "{e}" in delete_drink()')
         db.session.rollback()
-
-    finally:
-        db.session.close()
-        abort(500)
-
 
 # Error Handling
 
 @app.errorhandler(422)
 def unprocessable(error):
+    """422 Unprocessable App Error Handler"""
     return jsonify({
         "success": False,
         "error": 422,
@@ -272,6 +285,7 @@ def unprocessable(error):
 
 @app.errorhandler(404)
 def not_found(error):
+    """404 Not-Found App Error Handler"""
     return jsonify({
         "success": False,
         "error": 404,
@@ -281,6 +295,7 @@ def not_found(error):
 
 @app.errorhandler(400)
 def bad_request(error):
+    """400 Bad-Request App Error Handler"""
     return jsonify({
         "success": False,
         "error": 400,
@@ -290,6 +305,7 @@ def bad_request(error):
 
 @app.errorhandler(401)
 def unauthorized(error):
+    """401 Unauthorized App Error Handler"""
     return jsonify({
         "success": False,
         "error": 401,
@@ -299,6 +315,7 @@ def unauthorized(error):
 
 @app.errorhandler(403)
 def forbidden(error):
+    """403 Forbidden App Error Handler"""
     return jsonify({
         "success": False,
         "error": 403,
@@ -308,12 +325,12 @@ def forbidden(error):
 
 @app.errorhandler(500)
 def internal_server_error(error):
+    """500 Internal Server Error App Error Handler"""
     return jsonify({
         'success': False,
         'error': 500,
         'message': 'internal server error'
     }), 500
-
 
 # '''
 # @TODO implement error handler for AuthError
@@ -322,6 +339,7 @@ def internal_server_error(error):
 
 @app.errorhandler(AuthError)
 def auth_error(exception):
+    """Auth-Error App Error Handler"""
     error_exception_json = jsonify(exception.error)
     error_code = exception.status_code
 
