@@ -17,7 +17,7 @@ CORS(app)
 # !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 # '''
 
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 # ROUTES
 # '''
@@ -126,20 +126,14 @@ def create_drink(payload):
 
     # Get parameters from body
     title = body.get('title', None)
-    # recipe = body.get('recipe', None)
+    recipe = body.get('recipe', None)
 
-    # Used code review suggestion below
-    if type(body.get('recipe')) == str:
-        recipe = body.get('recipe')
-    else:
-        recipe = json.dumps(body.get('recipe'))
-    
     try:
 
         # Create a new drink, using body as inputs
         drink = Drink(
             title=title,
-            recipe=recipe
+            recipe=json.dumps(recipe)
         )
         # Insert into database
         drink.insert()
@@ -200,13 +194,7 @@ def edit_drink(payload, id):
         # If title or recipe is present, then update each correspondingly
         if title:
             drink_selected.title = title
-        # if recipe:
-        #     drink_selected.recipe = json.dumps(recipe)
-
-        # Used code review suggestion below
-        if type(recipe) == str:
-            drink_selected.recipe = recipe
-        else:
+        if recipe:
             drink_selected.recipe = json.dumps(recipe)
 
         # Update database session (runs db.session.commit())
