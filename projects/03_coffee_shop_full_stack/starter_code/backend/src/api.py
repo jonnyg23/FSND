@@ -126,21 +126,27 @@ def create_drink(payload):
 
     # Get parameters from body
     title = body.get('title', None)
-    recipe = body.get('recipe', None)
+    # recipe = body.get('recipe', None)
 
+    # Used code review suggestion below
+    if type(body.get('recipe')) == str:
+        recipe = body.get('recipe')
+    else:
+        recipe = json.dumps(body.get('recipe'))
+    
     try:
 
         # Create a new drink, using body as inputs
         drink = Drink(
             title=title,
-            recipe=json.dumps(recipe)
+            recipe=recipe
         )
         # Insert into database
         drink.insert()
 
         return jsonify({
             'success': True,
-            'drinks': drink.long()
+            'drinks': [drink.long()]
         })
 
     except Exception as e:
@@ -194,7 +200,13 @@ def edit_drink(payload, id):
         # If title or recipe is present, then update each correspondingly
         if title:
             drink_selected.title = title
-        if recipe:
+        # if recipe:
+        #     drink_selected.recipe = json.dumps(recipe)
+
+        # Used code review suggestion below
+        if type(recipe) == str:
+            drink_selected.recipe = recipe
+        else:
             drink_selected.recipe = json.dumps(recipe)
 
         # Update database session (runs db.session.commit())
@@ -202,7 +214,7 @@ def edit_drink(payload, id):
 
         return jsonify({
             'success': True,
-            'drinks': drink_selected.long()
+            'drinks': [drink_selected.long()]
         })
 
     except Exception as e:
