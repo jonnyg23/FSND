@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
+import os
 
 database_path = os.environ['DATABASE_URL']
 
@@ -38,3 +39,4 @@ class Person(db.Model):
       'id': self.id,
       'name': self.name,
       'catchphrase': self.catchphrase}
+      
